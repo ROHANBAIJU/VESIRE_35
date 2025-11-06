@@ -490,7 +490,7 @@ unified_dataset
 !Backend/yolo_dataset/data.yaml
 !plantdoc-DatasetNinja/meta.json
 !plantdoc-DatasetNinja/LICENSE.md
-
+models
 /plantdoc-DatasetNinja
 # Git configuration
 !.gitignore

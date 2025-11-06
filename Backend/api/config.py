@@ -20,6 +20,7 @@ class Config:
     
     # Paths
     BASE_DIR = Path(__file__).parent.parent
+    API_DIR = Path(__file__).parent
     DATA_DIR = BASE_DIR / 'data'
     MODELS_DIR = BASE_DIR / 'models'
     UPLOADS_DIR = DATA_DIR / 'uploads'
@@ -29,8 +30,8 @@ class Config:
     UPLOADS_DIR.mkdir(exist_ok=True)
     
     # Model Configuration
-    MODEL_PATH = MODELS_DIR / 'agriscan_plantdoc' / 'weights' / 'best.pt'
-    LABELS_PATH = BASE_DIR / 'yolo_dataset' / 'labels.txt'
+    MODEL_PATH = MODELS_DIR / 'agriscan_combined' / 'weights' / 'best.pt'
+    LABELS_PATH = API_DIR / 'labels.txt'
     CONFIDENCE_THRESHOLD = 0.5
     IOU_THRESHOLD = 0.45
     IMG_SIZE = 640

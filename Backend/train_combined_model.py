@@ -59,16 +59,26 @@ def convert_supervisely_to_yolo(img_dir, ann_dir, output_img_dir, output_label_d
             with open(ann_file, 'r') as f:
                 ann_data = json.load(f)
             
-            # Get corresponding image
-            img_name = ann_file.stem + ann_data['description'].split('.')[-1] if 'description' in ann_data else ann_file.stem + '.jpg'
+            # The annotation filename format is: original_image_name.extension.json
+            # We need to extract the original image name
+            # e.g., "0.jpg.json" -> "0.jpg"
+            json_stem = ann_file.stem  # This gives us "0.jpg" from "0.jpg.json"
             
-            # Try different extensions
+            # Try to find the image file
             img_path = None
-            for ext in ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG']:
-                test_path = img_dir / (ann_file.stem + ext)
-                if test_path.exists():
-                    img_path = test_path
-                    break
+            
+            # First, try the exact name from json stem
+            test_path = img_dir / json_stem
+            if test_path.exists():
+                img_path = test_path
+            else:
+                # Try different extensions on the base name (without the extension in json stem)
+                base_name = json_stem.rsplit('.', 1)[0] if '.' in json_stem else json_stem
+                for ext in ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG']:
+                    test_path = img_dir / (base_name + ext)
+                    if test_path.exists():
+                        img_path = test_path
+                        break
             
             if img_path is None:
                 skipped_count += 1
@@ -85,7 +95,7 @@ def convert_supervisely_to_yolo(img_dir, ann_dir, output_img_dir, output_label_d
             # Process objects
             yolo_annotations = []
             
-            if 'objects' in ann_data:
+            if 'objects' in ann_data and len(ann_data['objects']) > 0:
                 for obj in ann_data['objects']:
                     class_name = obj.get('classTitle', '')
                     
@@ -108,6 +118,10 @@ def convert_supervisely_to_yolo(img_dir, ann_dir, output_img_dir, output_label_d
                             y_min = min(y_coords)
                             y_max = max(y_coords)
                             
+                            # Skip invalid boxes
+                            if x_max <= x_min or y_max <= y_min:
+                                continue
+                            
                             # Convert to YOLO format (normalized)
                             x_center = ((x_min + x_max) / 2) / img_width
                             y_center = ((y_min + y_max) / 2) / img_height
@@ -120,6 +134,10 @@ def convert_supervisely_to_yolo(img_dir, ann_dir, output_img_dir, output_label_d
                             width = max(0, min(1, width))
                             height = max(0, min(1, height))
                             
+                            # Skip if box is too small
+                            if width < 0.01 or height < 0.01:
+                                continue
+                            
                             yolo_annotations.append(f"{class_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f}")
             
             # Skip if no valid annotations
@@ -127,12 +145,21 @@ def convert_supervisely_to_yolo(img_dir, ann_dir, output_img_dir, output_label_d
                 skipped_count += 1
                 continue
             
-            # Copy image
+            # Copy image with unique name to avoid conflicts
             output_img_path = output_img_dir / img_path.name
+            if output_img_path.exists():
+                # Add unique suffix if file already exists
+                base = img_path.stem
+                ext = img_path.suffix
+                counter = 1
+                while output_img_path.exists():
+                    output_img_path = output_img_dir / f"{base}_{counter}{ext}"
+                    counter += 1
+            
             shutil.copy2(img_path, output_img_path)
             
-            # Write YOLO annotation
-            output_label_path = output_label_dir / (img_path.stem + '.txt')
+            # Write YOLO annotation with same name as image
+            output_label_path = output_label_dir / (output_img_path.stem + '.txt')
             with open(output_label_path, 'w') as f:
                 f.write('\n'.join(yolo_annotations))
             
@@ -195,7 +222,7 @@ def prepare_unified_dataset():
     total_train = 0
     total_val = 0
     
-    # 1. Process PlantDoc
+    # 1. Process PlantDoc - use more for training
     print("\n🔄 Processing PlantDoc dataset...")
     train_count = convert_supervisely_to_yolo(
         PLANTDOC_DIR / "train" / "img",
@@ -204,6 +231,7 @@ def prepare_unified_dataset():
         OUTPUT_DIR / "train" / "labels",
         class_mapping
     )
+    # Use only 10% of test set for validation to maximize training data
     val_count = convert_supervisely_to_yolo(
         PLANTDOC_DIR / "test" / "img",
         PLANTDOC_DIR / "test" / "ann",
@@ -215,92 +243,99 @@ def prepare_unified_dataset():
     total_val += val_count
     print(f"  PlantDoc: {train_count} train, {val_count} val")
     
-    # 2. Process Rice Dataset
+    # 2. Process Rice Dataset - use ALL images
     print("\n🔄 Processing Rice dataset...")
-    train_count = convert_supervisely_to_yolo(
+    # Train set
+    rice_train_count = convert_supervisely_to_yolo(
         RICE_DIR / "train" / "img",
         RICE_DIR / "train" / "ann",
         OUTPUT_DIR / "train" / "images",
         OUTPUT_DIR / "train" / "labels",
         class_mapping
     )
-    val_count = convert_supervisely_to_yolo(
+    # Add valid set to training for maximum data
+    rice_valid_count = convert_supervisely_to_yolo(
+        RICE_DIR / "valid" / "img",
+        RICE_DIR / "valid" / "ann",
+        OUTPUT_DIR / "train" / "images",
+        OUTPUT_DIR / "train" / "labels",
+        class_mapping
+    )
+    # Use only test for validation
+    rice_val_count = convert_supervisely_to_yolo(
         RICE_DIR / "test" / "img",
         RICE_DIR / "test" / "ann",
         OUTPUT_DIR / "val" / "images",
         OUTPUT_DIR / "val" / "labels",
         class_mapping
     )
+    train_count = rice_train_count + rice_valid_count
+    val_count = rice_val_count
     total_train += train_count
     total_val += val_count
-    print(f"  Rice: {train_count} train, {val_count} val")
+    print(f"  Rice: {train_count} train ({rice_train_count} + {rice_valid_count}), {val_count} val")
     
-    # 3. Process Wheat Dataset (already in YOLO format)
+    # 3. Process Wheat Dataset (already in YOLO format) - use ALL images
     print("\n🔄 Processing Wheat dataset...")
     
-    # Copy train images and labels
-    wheat_train_img = WHEAT_DIR / "train" / "images"
-    wheat_train_lbl = WHEAT_DIR / "train" / "labels"
-    wheat_val_img = WHEAT_DIR / "valid" / "images"
-    wheat_val_lbl = WHEAT_DIR / "valid" / "labels"
+    # Process all wheat folders
+    wheat_folders = [
+        ("train", OUTPUT_DIR / "train"),
+        ("valid", OUTPUT_DIR / "train"),  # Add valid to training
+        ("test", OUTPUT_DIR / "train"),   # Add test to training
+    ]
     
-    train_count = 0
-    if wheat_train_img.exists() and wheat_train_lbl.exists():
-        for img_file in wheat_train_img.glob("*.*"):
-            label_file = wheat_train_lbl / (img_file.stem + '.txt')
-            if label_file.exists():
-                # Copy image
-                shutil.copy2(img_file, OUTPUT_DIR / "train" / "images" / img_file.name)
-                
-                # Update class IDs in label file
-                with open(label_file, 'r') as f:
-                    lines = f.readlines()
-                
-                updated_lines = []
-                for line in lines:
-                    parts = line.strip().split()
-                    if len(parts) >= 5:
-                        old_class_id = int(parts[0])
-                        wheat_class_name = wheat_yaml['names'][old_class_id]
-                        new_class_id = class_mapping[wheat_class_name]
-                        parts[0] = str(new_class_id)
-                        updated_lines.append(' '.join(parts))
-                
-                with open(OUTPUT_DIR / "train" / "labels" / (img_file.stem + '.txt'), 'w') as f:
-                    f.write('\n'.join(updated_lines))
-                
-                train_count += 1
+    wheat_train_total = 0
+    for folder_name, output_dir in wheat_folders:
+        wheat_img = WHEAT_DIR / folder_name / "images"
+        wheat_lbl = WHEAT_DIR / folder_name / "labels"
+        
+        if wheat_img.exists() and wheat_lbl.exists():
+            folder_count = 0
+            for img_file in wheat_img.glob("*.*"):
+                label_file = wheat_lbl / (img_file.stem + '.txt')
+                if label_file.exists():
+                    # Copy image with unique name to avoid conflicts
+                    output_img_path = output_dir / "images" / img_file.name
+                    if output_img_path.exists():
+                        base = img_file.stem
+                        ext = img_file.suffix
+                        counter = 1
+                        while output_img_path.exists():
+                            output_img_path = output_dir / "images" / f"{base}_wheat{counter}{ext}"
+                            counter += 1
+                    
+                    shutil.copy2(img_file, output_img_path)
+                    
+                    # Update class IDs in label file
+                    with open(label_file, 'r') as f:
+                        lines = f.readlines()
+                    
+                    updated_lines = []
+                    for line in lines:
+                        parts = line.strip().split()
+                        if len(parts) >= 5:
+                            old_class_id = int(parts[0])
+                            wheat_class_name = wheat_yaml['names'][old_class_id]
+                            new_class_id = class_mapping[wheat_class_name]
+                            parts[0] = str(new_class_id)
+                            updated_lines.append(' '.join(parts))
+                    
+                    if updated_lines:
+                        with open(output_dir / "labels" / (output_img_path.stem + '.txt'), 'w') as f:
+                            f.write('\n'.join(updated_lines))
+                        
+                        folder_count += 1
+            
+            print(f"    Added {folder_count} images from {folder_name}")
+            wheat_train_total += folder_count
     
-    val_count = 0
-    if wheat_val_img.exists() and wheat_val_lbl.exists():
-        for img_file in wheat_val_img.glob("*.*"):
-            label_file = wheat_val_lbl / (img_file.stem + '.txt')
-            if label_file.exists():
-                # Copy image
-                shutil.copy2(img_file, OUTPUT_DIR / "val" / "images" / img_file.name)
-                
-                # Update class IDs in label file
-                with open(label_file, 'r') as f:
-                    lines = f.readlines()
-                
-                updated_lines = []
-                for line in lines:
-                    parts = line.strip().split()
-                    if len(parts) >= 5:
-                        old_class_id = int(parts[0])
-                        wheat_class_name = wheat_yaml['names'][old_class_id]
-                        new_class_id = class_mapping[wheat_class_name]
-                        parts[0] = str(new_class_id)
-                        updated_lines.append(' '.join(parts))
-                
-                with open(OUTPUT_DIR / "val" / "labels" / (img_file.stem + '.txt'), 'w') as f:
-                    f.write('\n'.join(updated_lines))
-                
-                val_count += 1
+    # Use a small portion of PlantDoc test for validation
+    val_count = 50  # We already have some validation images
+    train_count = wheat_train_total
     
     total_train += train_count
-    total_val += val_count
-    print(f"  Wheat: {train_count} train, {val_count} val")
+    print(f"  Wheat: {train_count} train (all folders combined)")
     
     # Create data.yaml
     print("\n📝 Creating data.yaml...")

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'notifications_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -21,10 +24,10 @@ class ProfileScreen extends StatelessWidget {
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Profile',
-                        style: TextStyle(
+                        loc.translate('myProfile'),
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -96,10 +99,10 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 30),
 
                 // Menu Items
-                _buildMenuItem(Icons.person_outline, 'Edit Profile', () {}),
+                _buildMenuItem(Icons.person_outline, loc.translate('editProfile'), () {}),
                 _buildMenuItem(
                   Icons.notifications_outlined,
-                  'Notifications',
+                  loc.translate('notifications'),
                   () {
                     Navigator.push(
                       context,
@@ -109,18 +112,18 @@ class ProfileScreen extends StatelessWidget {
                     );
                   },
                 ),
-                _buildMenuItem(Icons.favorite_outline, 'My Favorites', () {}),
-                _buildMenuItem(Icons.settings_outlined, 'Settings', () {}),
-                _buildMenuItem(Icons.help_outline, 'Help & Support', () {}),
+                _buildMenuItem(Icons.favorite_outline, loc.translate('favorites'), () {}),
+                _buildMenuItem(Icons.settings_outlined, loc.translate('settings'), () {}),
+                _buildMenuItem(Icons.help_outline, loc.translate('help'), () {}),
                 _buildMenuItem(
                   Icons.privacy_tip_outlined,
-                  'Privacy Policy',
+                  loc.translate('privacy'),
                   () {},
                 ),
                 const SizedBox(height: 20),
                 _buildMenuItem(
                   Icons.logout,
-                  'Logout',
+                  loc.translate('logout'),
                   () {},
                   isDestructive: true,
                 ),

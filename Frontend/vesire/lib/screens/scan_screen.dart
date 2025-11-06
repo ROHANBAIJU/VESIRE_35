@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
 import '../utils/snackbar_utils.dart';
+import '../l10n/app_localizations.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -12,6 +13,8 @@ class ScanScreen extends StatefulWidget {
 class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -32,7 +35,7 @@ class _ScanScreenState extends State<ScanScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'AR Camera View',
+                    loc.translate('scan'),
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white.withOpacity(0.7),

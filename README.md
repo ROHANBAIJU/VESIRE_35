@@ -1,5 +1,4 @@
 # Vesire AR: Offline AI Disease Diagnoser<div align="center">
-# Vesire AR: Offline AI Disease Diagnoser
 
 
 

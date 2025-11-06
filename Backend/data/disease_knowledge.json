@@ -1,0 +1,302 @@
+{
+  "Tomato leaf late blight": {
+    "name": "Tomato leaf late blight",
+    "scientific_name": "Phytophthora infestans",
+    "description": "Late blight is a destructive disease of tomato and potato caused by the water mold Phytophthora infestans. It can rapidly destroy entire crops in favorable weather conditions (cool and moist).",
+    "symptoms": [
+      "Dark brown to purplish-black spots on leaves",
+      "White fuzzy growth on undersides of leaves",
+      "Rapid yellowing and death of foliage",
+      "Brown lesions on stems",
+      "Dark spots on tomato fruits"
+    ],
+    "treatment": {
+      "organic": [
+        "Apply copper-based fungicides (copper sulfate)",
+        "Remove and destroy infected plant parts immediately",
+        "Use baking soda spray (1 tablespoon per gallon water)",
+        "Apply neem oil as preventive measure"
+      ],
+      "chemical": [
+        "Use chlorothalonil-based fungicides",
+        "Apply mancozeb or maneb fungicides",
+        "Use metalaxyl or dimethomorph for severe infections",
+        "Rotate fungicides to prevent resistance"
+      ],
+      "cultural": [
+        "Improve air circulation by spacing plants properly",
+        "Water at the base, avoid overhead watering",
+        "Remove weeds that can harbor the pathogen",
+        "Stake and prune plants to improve air flow"
+      ]
+    },
+    "prevention": [
+      "Plant resistant varieties when available",
+      "Avoid planting tomatoes near potatoes",
+      "Apply mulch to prevent soil splash onto leaves",
+      "Monitor weather conditions and apply preventive fungicides before rain",
+      "Rotate crops - don't plant tomatoes in same location for 3-4 years",
+      "Ensure good drainage in the field"
+    ],
+    "severity": "high",
+    "affected_plants": ["Tomato", "Potato"]
+  },
+  
+  "Tomato Early blight leaf": {
+    "name": "Tomato Early blight leaf",
+    "scientific_name": "Alternaria solani",
+    "description": "Early blight is a common tomato disease caused by the fungus Alternaria solani. It affects leaves, stems, and fruits, causing yield loss if not managed properly.",
+    "symptoms": [
+      "Dark brown spots with concentric rings (target-like pattern)",
+      "Yellowing of leaves around the spots",
+      "Leaf drop starting from bottom of plant",
+      "Stem lesions with dark rings",
+      "Sunken spots on fruits near the stem"
+    ],
+    "treatment": {
+      "organic": [
+        "Apply copper fungicides weekly",
+        "Use compost tea as foliar spray",
+        "Apply sulfur-based fungicides",
+        "Remove infected leaves promptly"
+      ],
+      "chemical": [
+        "Apply chlorothalonil fungicide every 7-10 days",
+        "Use mancozeb or maneb fungicides",
+        "Azoxystrobin for resistant strains",
+        "Alternate fungicides to prevent resistance"
+      ],
+      "cultural": [
+        "Mulch around plants to prevent soil splash",
+        "Space plants adequately for air circulation",
+        "Water at base of plants, not overhead",
+        "Stake plants to keep foliage off ground"
+      ]
+    },
+    "prevention": [
+      "Use disease-free transplants",
+      "Rotate crops - avoid planting tomatoes in same spot for 3 years",
+      "Remove plant debris at end of season",
+      "Apply preventive fungicides before disease appears",
+      "Choose resistant varieties when available",
+      "Ensure adequate soil fertility, especially nitrogen"
+    ],
+    "severity": "medium",
+    "affected_plants": ["Tomato", "Potato", "Eggplant"]
+  },
+  
+  "Potato leaf early blight": {
+    "name": "Potato leaf early blight",
+    "scientific_name": "Alternaria solani",
+    "description": "Early blight of potato is caused by the fungus Alternaria solani. It primarily affects older leaves and can reduce yield by causing premature defoliation.",
+    "symptoms": [
+      "Dark brown spots with concentric rings on older leaves",
+      "Yellow halo around the spots",
+      "Leaves turn yellow and die from bottom up",
+      "Stem lesions near soil line",
+      "Tuber infections causing dark, sunken lesions"
+    ],
+    "treatment": {
+      "organic": [
+        "Spray copper-based fungicides",
+        "Apply sulfur dust or spray",
+        "Use neem oil regularly",
+        "Remove and destroy infected foliage"
+      ],
+      "chemical": [
+        "Apply mancozeb fungicide every 7-14 days",
+        "Use chlorothalonil for preventive control",
+        "Apply azoxystrobin for curative treatment",
+        "Alternate different fungicide groups"
+      ],
+      "cultural": [
+        "Hill soil around plants to protect stems",
+        "Mulch to prevent soil splash",
+        "Improve drainage in field",
+        "Space plants for good air flow"
+      ]
+    },
+    "prevention": [
+      "Plant certified disease-free seed potatoes",
+      "Rotate crops - 3-4 year rotation",
+      "Remove volunteer potato plants",
+      "Destroy crop residue after harvest",
+      "Monitor and apply fungicides before disease onset",
+      "Ensure balanced fertilization"
+    ],
+    "severity": "medium",
+    "affected_plants": ["Potato", "Tomato"]
+  },
+  
+  "Potato leaf late blight": {
+    "name": "Potato leaf late blight",
+    "scientific_name": "Phytophthora infestans",
+    "description": "Late blight is the most devastating disease of potato, historically responsible for the Irish potato famine. Can destroy entire fields within days under favorable conditions.",
+    "symptoms": [
+      "Water-soaked spots on leaves that turn brown or black",
+      "White mold growth on undersides of leaves in humid conditions",
+      "Rapid browning and death of foliage",
+      "Brown rot of tubers starting from surface",
+      "Characteristic 'burnt' appearance of fields"
+    ],
+    "treatment": {
+      "organic": [
+        "Apply copper fungicides immediately",
+        "Remove and burn infected plants",
+        "Use bordeaux mixture (copper sulfate + lime)",
+        "Harvest tubers as soon as possible"
+      ],
+      "chemical": [
+        "Apply chlorothalonil preventively",
+        "Use metalaxyl or mefenoxam for curative action",
+        "Apply dimethomorph or fluazinam",
+        "Use tank mixtures for broad spectrum control"
+      ],
+      "cultural": [
+        "Destroy volunteer potato plants",
+        "Hill soil high to protect tubers",
+        "Avoid overhead irrigation",
+        "Kill vines 2 weeks before harvest"
+      ]
+    },
+    "prevention": [
+      "Plant resistant varieties",
+      "Use certified disease-free seed",
+      "Rotate with non-host crops",
+      "Monitor weather and spray before rain",
+      "Bury or destroy crop residue",
+      "Separate seed and commercial crops"
+    ],
+    "severity": "high",
+    "affected_plants": ["Potato", "Tomato"]
+  },
+  
+  "Corn leaf blight": {
+    "name": "Corn leaf blight",
+    "scientific_name": "Exserohilum turcicum",
+    "description": "Northern corn leaf blight is a foliar disease that can significantly reduce yield by decreasing photosynthetic area and causing premature death of leaves.",
+    "symptoms": [
+      "Long, elliptical gray-green to tan lesions on leaves",
+      "Lesions may merge and cover large areas of leaf blade",
+      "Lesions start on lower leaves and progress upward",
+      "Dark gray sporulation in humid conditions",
+      "Premature death of leaves"
+    ],
+    "treatment": {
+      "organic": [
+        "Apply sulfur-based fungicides",
+        "Use copper fungicides",
+        "Remove infected lower leaves",
+        "Apply compost tea to boost plant immunity"
+      ],
+      "chemical": [
+        "Apply strobilurin fungicides (azoxystrobin)",
+        "Use triazole fungicides (propiconazole)",
+        "Apply mancozeb for preventive control",
+        "Time applications at early disease stages"
+      ],
+      "cultural": [
+        "Plant resistant hybrids",
+        "Ensure adequate plant spacing",
+        "Manage nitrogen levels properly",
+        "Bury crop residue by deep plowing"
+      ]
+    },
+    "prevention": [
+      "Choose resistant corn hybrids",
+      "Rotate crops with non-host species",
+      "Bury infected crop debris",
+      "Plant at recommended seeding rates",
+      "Monitor fields regularly for early detection",
+      "Avoid excessive nitrogen application"
+    ],
+    "severity": "medium",
+    "affected_plants": ["Corn", "Sorghum"]
+  },
+  
+  "Apple Scab Leaf": {
+    "name": "Apple Scab Leaf",
+    "scientific_name": "Venturia inaequalis",
+    "description": "Apple scab is one of the most serious diseases of apple trees. It affects leaves, fruit, and young twigs, causing significant economic losses.",
+    "symptoms": [
+      "Olive-green to brown velvety spots on leaves",
+      "Spots turn dark brown to black as they age",
+      "Leaves may curl and fall prematurely",
+      "Scabby lesions on fruit",
+      "Cracked and deformed fruit"
+    ],
+    "treatment": {
+      "organic": [
+        "Apply sulfur sprays starting at bud break",
+        "Use lime sulfur during dormant season",
+        "Apply copper fungicides",
+        "Remove and destroy fallen leaves"
+      ],
+      "chemical": [
+        "Apply captan or mancozeb fungicides",
+        "Use myclobutanil or propiconazole",
+        "Apply dodine during early season",
+        "Maintain regular spray schedule during rainy periods"
+      ],
+      "cultural": [
+        "Prune trees for better air circulation",
+        "Rake and destroy fallen leaves in autumn",
+        "Apply mulch over fallen leaves",
+        "Space trees properly"
+      ]
+    },
+    "prevention": [
+      "Plant scab-resistant varieties",
+      "Remove fallen leaves and fruit in autumn",
+      "Begin preventive sprays at bud break",
+      "Continue sprays through early summer",
+      "Improve orchard sanitation",
+      "Avoid overhead irrigation"
+    ],
+    "severity": "high",
+    "affected_plants": ["Apple", "Crabapple", "Pear"]
+  },
+  
+  "Bell_pepper leaf spot": {
+    "name": "Bell_pepper leaf spot",
+    "scientific_name": "Xanthomonas campestris pv. vesicatoria",
+    "description": "Bacterial leaf spot is a serious disease of bell peppers causing leaf drop and reduced fruit quality. Thrives in warm, humid conditions.",
+    "symptoms": [
+      "Small, dark brown spots with yellow halos on leaves",
+      "Spots may merge causing large dead areas",
+      "Leaves turn yellow and drop prematurely",
+      "Raised, corky spots on fruits",
+      "Reduced fruit quality and yield"
+    ],
+    "treatment": {
+      "organic": [
+        "Apply copper-based bactericides",
+        "Remove and destroy infected plants",
+        "Use hydrogen peroxide solution spray",
+        "Apply beneficial bacteria (Bacillus subtilis)"
+      ],
+      "chemical": [
+        "Apply copper hydroxide or copper sulfate",
+        "Use fixed copper formulations",
+        "Apply streptomycin (where approved)",
+        "Tank mix copper with mancozeb"
+      ],
+      "cultural": [
+        "Remove infected plant parts immediately",
+        "Avoid overhead watering",
+        "Disinfect tools between plants",
+        "Improve air circulation"
+      ]
+    },
+    "prevention": [
+      "Use disease-free seeds and transplants",
+      "Plant resistant varieties",
+      "Rotate crops - 3 year rotation minimum",
+      "Avoid working with wet plants",
+      "Sanitize greenhouse and tools",
+      "Remove crop debris after harvest"
+    ],
+    "severity": "medium",
+    "affected_plants": ["Bell pepper", "Chili pepper", "Tomato"]
+  }
+}

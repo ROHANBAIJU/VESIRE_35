@@ -35,11 +35,14 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   
-  # AR Plugin for Flutter - Using arcore (Android only for simplicity)
-  arcore_flutter_plugin: ^0.0.9
+  # WebView for web-based AR (most reliable!)
+  webview_flutter: ^4.4.2
   
-  # For 3D model handling and math operations
+  # For 3D model handling and math operations  
   vector_math: ^2.1.4
+  
+  # Camera plugin for 2D AR overlay test
+  camera: ^0.10.5+5
 
 dev_dependencies:
   flutter_test:

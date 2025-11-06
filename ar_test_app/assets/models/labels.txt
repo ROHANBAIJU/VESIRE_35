@@ -1,0 +1,14 @@
+Tomato_Septoria
+Corn_Leaf_Blight
+Squash_Powdery_Leaf
+Apple_Healthy
+Tomato_Bacterial_Spot
+Tomato_Healthy
+Apple_Rust_Leaf
+Apple_Scab_Leaf
+Grape_Healthy
+Corn_Rust_Leaf
+Grape_Black_Rot
+Corn_Gray_Leaf_Spot
+BellPepper_Healthy
+BellPepper_Leaf_Spot

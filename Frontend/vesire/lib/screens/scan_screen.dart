@@ -511,7 +511,6 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                       color: Colors.black.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
-<<<<<<< Updated upstream
                     child: IconButton(
                       onPressed: () {
                         _detectionTimer?.cancel();
@@ -521,59 +520,6 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                         Icons.close,
                         color: Colors.white,
                         size: 28,
-=======
-                  ),
-
-                  // Spacer to push flash to center
-                  const Expanded(
-                    child: Center(
-                      child: SizedBox.shrink(),
-                    ),
-                  ),
-
-                  // Flash - centered
-                  IconButton(
-                    onPressed: _toggleFlash,
-                    icon: Icon(
-                      _isFlashOn ? Icons.flash_on : Icons.flash_off,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),
-
-                  // Right controls: test button + persistent TTS toggle
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () async {
-                          // Quick voice test in selected language
-                          final tts = TtsService();
-                          final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-                          await tts.setLanguage(languageProvider.locale.languageCode);
-                          
-                          // Test message in different languages
-                          String testMessage;
-                          switch (languageProvider.locale.languageCode) {
-                            case 'hi':
-                              testMessage = 'यह एक आवाज परीक्षण है। वेसीर हिंदी में बोल रहा है।';
-                              break;
-                            case 'kn':
-                              testMessage = 'ಇದು ಧ್ವನಿ ಪರೀಕ್ಷೆಯಾಗಿದೆ. ವೆಸೈರ್ ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡುತ್ತಿದೆ.';
-                              break;
-                            default:
-                              testMessage = 'This is a voice test. Vesire is speaking in English.';
-                          }
-                          
-                          tts.speak(testMessage);
-                        },
-                        icon: const Icon(
-                          Icons.volume_up,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                        tooltip: 'Voice test',
->>>>>>> Stashed changes
                       ),
                     ),
                   ),

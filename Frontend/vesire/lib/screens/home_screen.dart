@@ -5,13 +5,9 @@ import 'profile_screen.dart';
 import 'history_screen.dart';
 import 'analytics_screen.dart';
 import 'notifications_screen.dart';
-import 'community_screen.dart';
-import 'guide_screen.dart';
-import 'garden_screen.dart';
 import '../services/connectivity_service.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/language_provider.dart';
-import '../utils/page_transitions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onItemTapped(int index) {
     if (index == 2) {
-<<<<<<< Updated upstream
       // Navigate to full screen scanner
       Navigator.push(
         context,
@@ -64,10 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }
       });
-=======
-      // Navigate to full screen scanner with fade animation
-      context.fadeToPage(const ScanScreen());
->>>>>>> Stashed changes
     } else {
       setState(() {
         _selectedIndex = index;
@@ -783,22 +774,40 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       _buildHeaderQuickAction(
                         Icons.qr_code_scanner_rounded,
                         loc.translate('scan'),
-                        () => context.fadeToPage(const ScanScreen()),
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ScanScreen()),
+                        ),
                       ),
                       _buildHeaderQuickAction(
                         Icons.yard_rounded,
                         loc.translate('garden'),
-                        () => context.fadeToPage(const GardenScreen()),
+                        () {
+                          // Garden screen not implemented yet
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Garden feature coming soon!')),
+                          );
+                        },
                       ),
                       _buildHeaderQuickAction(
                         Icons.book_rounded,
                         loc.translate('guide'),
-                        () => context.fadeToPage(const GuideScreen()),
+                        () {
+                          // Guide screen not implemented yet
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Guide feature coming soon!')),
+                          );
+                        },
                       ),
                       _buildHeaderQuickAction(
                         Icons.people_rounded,
                         loc.translate('community'),
-                        () => context.fadeToPage(const CommunityScreen()),
+                        () {
+                          // Community screen not implemented yet
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Community feature coming soon!')),
+                          );
+                        },
                       ),
                     ],
                   ),

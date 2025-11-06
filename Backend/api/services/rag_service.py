@@ -134,8 +134,8 @@ class RAGService:
         try:
             import google.generativeai as genai
             
-            # Configure Gemini (check for GEMINI_API_KEY in config)
-            gemini_key = os.getenv('GEMINI_API_KEY', config.OPENAI_API_KEY)
+            # Configure Gemini - use config value (from .env file)
+            gemini_key = config.GEMINI_API_KEY or config.OPENAI_API_KEY
             
             if gemini_key and not gemini_key.startswith('sk-'):  # Not OpenAI key
                 genai.configure(api_key=gemini_key)

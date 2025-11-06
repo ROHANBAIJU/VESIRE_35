@@ -32,7 +32,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)---
 
-![AgriScan Banner](UI%20PICS%20FOR%20README/IMG-20251106-WA0014.jpg)
+
 
 [![YOLOv8](https://img.shields.io/badge/YOLOv8-AI%20Detection-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://github.com/ultralytics/ultralytics)
 

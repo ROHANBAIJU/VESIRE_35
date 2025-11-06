@@ -23,7 +23,9 @@
 
 
 
-![AgriScan Banner](UI%20PICS%20FOR%20README/IMG-20251106-WA0014.jpg)
+<p align="center">
+  <img src="UI PICS FOR README/IMG-20251106-WA0014.jpg" alt="AgriScan Banner" width="50%">
+</p>
 
 Hello! We're **VESIRE**, a passionate student team participating in the SJBIT Hackathon 2025.  
 

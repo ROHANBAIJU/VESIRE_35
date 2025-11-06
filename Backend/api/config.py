@@ -41,6 +41,7 @@ class Config:
     
     # RAG Configuration
     USE_ONLINE_RAG = os.getenv('USE_ONLINE_RAG', 'False').lower() == 'true'
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
     KNOWLEDGE_BASE_PATH = DATA_DIR / 'disease_knowledge.json'
     

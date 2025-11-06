@@ -9,10 +9,16 @@ import requests
 import base64
 import json
 import time
+import os
 from datetime import datetime
+from pathlib import Path
 import threading
 from queue import Queue
 import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(Path(__file__).parent / '.env')
 
 # ============================================================================
 # Configuration
@@ -21,8 +27,8 @@ import google.generativeai as genai
 # Backend API
 API_BASE_URL = "http://127.0.0.1:5000/api"
 
-# Gemini API
-GEMINI_API_KEY = "AIzaSyDKCnXD1fuM22M0sYpc05DOAAaJmv3mXFo"
+# Gemini API - Load from environment variable
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 
 # Detection settings
 CONFIDENCE_THRESHOLD = 0.5
@@ -39,6 +45,14 @@ COLOR_WARNING = (0, 165, 255)  # Orange
 # ============================================================================
 # Initialize Gemini with Model Fallback
 # ============================================================================
+
+# Validate API key
+if not GEMINI_API_KEY:
+    print("⚠️  WARNING: GEMINI_API_KEY not found in .env file!")
+    print("   Gemini diagnosis will be unavailable.")
+    print("   Please add GEMINI_API_KEY to Backend/.env file")
+else:
+    print(f"✅ Gemini API key loaded from .env file")
 
 genai.configure(api_key=GEMINI_API_KEY)
 

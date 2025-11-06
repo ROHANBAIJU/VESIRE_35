@@ -494,7 +494,7 @@ yolo_dataset
 # Git configuration
 !.gitignore
 !.gitattributes
-
+.env
 # ============================================================================
 # Git LFS (Large File Storage) - For large AI models
 # ============================================================================

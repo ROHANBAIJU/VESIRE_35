@@ -33,7 +33,8 @@ We're excited to innovate, collaborate, and build something that creates real-wo
 
 
 
-[📱 Features](#-features) • [🏗️ Architecture](#️-architecture) • [🚀 Quick Start](#-quick-start) • [📸 Screenshots](#-screenshots) • [👥 Team](#-team-vesire)### 👥 Team Members
+[📱 Features](#-features) • [🏗️ Architecture](#️-architecture) • [🚀 Quick Start](#-quick-start) • [📸 Screenshots](#-screenshots) • [👥 Team](#-team-vesire)
+### 👥 Team Members
 
 - **Ananya** — Team Lead  
 

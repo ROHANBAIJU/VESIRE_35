@@ -23,7 +23,9 @@
 
 
 
-![AgriScan Banner](UI%20PICS%20FOR%20README/IMG-20251106-WA0014.jpg)Hello! We're **VESIRE**, a passionate student team participating in the SJBIT Hackathon 2025.  
+![AgriScan Banner](UI%20PICS%20FOR%20README/IMG-20251106-WA0014.jpg)
+
+Hello! We're **VESIRE**, a passionate student team participating in the SJBIT Hackathon 2025.  
 
 We're excited to innovate, collaborate, and build something that creates real-world impact.
 

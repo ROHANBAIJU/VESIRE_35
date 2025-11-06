@@ -50,8 +50,6 @@
 
 ## 🧠 Team VESIRE — SJBIT Hackathon 2025<p align="center">
 
-  <img src="UI PICS FOR README/IMG-20251106-WA0014.jpg" alt="AgriScan Banner" width="50%">
-
 Hello! We're **VESIRE**, a passionate student team participating in the SJBIT Hackathon 2025.  </p>
 
 We're excited to innovate, collaborate, and build something that creates real-world impact.

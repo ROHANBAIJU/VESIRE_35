@@ -1,4 +1,5 @@
-# Vesire AR: Offline AI Disease Diagnoser<div align="center"># Vesire AR: Offline AI Disease Diagnoser
+# Vesire AR: Offline AI Disease Diagnoser<div align="center">
+# Vesire AR: Offline AI Disease Diagnoser
 
 
 
@@ -58,14 +59,10 @@ Hello! We're **VESIRE**, a passionate student team participating in the SJBIT Ha
 
 ### 👥 Team Members
 
-- **Ananya** — Team Lead  We're excited to innovate, collaborate, and build something that creates real-world impact.
-
+- **Ananya** — Team Lead  
 - **Sruthi**  
-
-- **Joel**  **An AI-powered solution that brings expert plant disease diagnosis to farmers' fingertips — with offline support and real-time AR visualization.**
-
+- **Joel**  
 - **Srijan**  
-
 - **Rohan**
 
 
@@ -114,19 +111,20 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 
 
 
-### 🚨 The Challenge| 💻 **Developer** | **Sruthi** | [@sruthi](https://github.com) |Smallholder farmers face significant yield loss due to crop diseases, often lacking access to timely expert advice or reliable internet for diagnostic apps.  
+### 🚨 The Challenge|
 
 
-
-- 🌾 Smallholder farmers lose **30-40% of crop yield** to diseases annually| 🎨 **UI/UX Designer** | **Joel** | [@joel](https://github.com) |**AgriScan AR** solves this problem by putting a powerful AI diagnostician directly in their hands—no internet required.
+- 🌾 Smallholder farmers lose **30-40% of crop yield** to diseases annually,
+**AgriScan AR** solves this problem by putting a powerful AI diagnostician directly in their hands—no internet required.
 
 - 📱 Limited access to agricultural experts and diagnostic tools
 
-- 🌐 Unreliable internet connectivity in rural areas| 🤖 **AI Engineer** | **Srijan** | [@srijan](https://github.com) |
+- 🌐 Unreliable internet connectivity in rural areas
 
 - 💰 High cost of traditional disease diagnosis methods
 
-- ⏰ Time-critical detection - diseases spread rapidly| ⚙️ **Backend Developer** | **Rohan** | [@ROHANBAIJU](https://github.com/ROHANBAIJU) |By leveraging **on-device machine learning** and a **pragmatic Augmented Reality (AR)** interface, the app performs real-time object detection on the live camera feed.  
+- ⏰ Time-critical detection - diseases spread rapidly,
+By leveraging **on-device machine learning** and a **pragmatic Augmented Reality (AR)** interface, the app performs real-time object detection on the live camera feed.  
 
 
 
@@ -140,7 +138,6 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 
 | 📷 Point Camera | 🤖 AI Detection | 🎯 AR Overlay | 💊 Get Treatment |---
 
-|:---------------:|:---------------:|:-------------:|:----------------:|
 
 | Aim at affected leaf | YOLOv8 identifies disease | Bounding boxes highlight symptoms | Instant diagnosis + AI recommendations |</div>
 

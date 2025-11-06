@@ -51,9 +51,9 @@ We’re a team driven by curiosity, collaboration, and creativity — all set to
 
 ---
 
-| Role | Member | GitHub |
 
-|:----:|:------:|:------:|## 📖 Project Summary
+
+## 📖 Project Summary
 
 | 🎯 **Team Lead** | **Ananya** | [@ananya](https://github.com) |
 

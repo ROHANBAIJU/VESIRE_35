@@ -41,12 +41,46 @@ class RAGService:
         Get disease diagnosis and treatment
         Args:
             disease_name: Name of the disease
-            language: Language code (en, kn)
+            language: Language code (en, hi, kn)
             use_cache: Use cached data if available
         Returns:
             dict: Diagnosis information
         """
-        # Try cache first (offline support)
+        # For non-English languages, ALWAYS use online LLM (knowledge base is English-only)
+        # This ensures multilingual responses
+        if language.lower() != 'en':
+            print(f"🌐 [RAG] Non-English language requested ({language}), skipping English-only sources")
+            
+            # Try online RAG for multilingual support (check both Gemini and OpenAI keys)
+            if self.use_online and (config.GEMINI_API_KEY or config.OPENAI_API_KEY):
+                try:
+                    print(f"🔄 [RAG] Calling online LLM for {language} translation...")
+                    diagnosis = self.get_online_diagnosis(disease_name, language)
+                    
+                    # Cache for offline use (will be in requested language)
+                    db_service.cache_disease(
+                        name=disease_name,
+                        scientific_name=diagnosis.get('scientific_name', ''),
+                        description=diagnosis.get('description', ''),
+                        symptoms=diagnosis.get('symptoms', []),
+                        treatment=diagnosis.get('treatment', {}),
+                        severity=diagnosis.get('severity', 'medium'),
+                        prevention=diagnosis.get('prevention', [])
+                    )
+                    
+                    return {
+                        'success': True,
+                        'disease': diagnosis,
+                        'source': 'online_llm',
+                        'language': language
+                    }
+                    
+                except Exception as e:
+                    print(f"❌ Online RAG failed for {language}: {e}")
+                    # Fall through to English sources as fallback
+                    print(f"⚠️  Falling back to English sources...")
+        
+        # For English OR as fallback: Try cache first (offline support)
         if use_cache:
             cached = db_service.get_disease(disease_name)
             if cached:
@@ -65,7 +99,7 @@ class RAGService:
                     'language': language
                 }
         
-        # Try local knowledge base
+        # Try local knowledge base (English only)
         if disease_name in self.knowledge_base:
             diagnosis = self.knowledge_base[disease_name]
             
@@ -87,8 +121,8 @@ class RAGService:
                 'language': language
             }
         
-        # Try online RAG if enabled
-        if self.use_online and config.OPENAI_API_KEY:
+        # Try online RAG if enabled (check both Gemini and OpenAI keys)
+        if self.use_online and (config.GEMINI_API_KEY or config.OPENAI_API_KEY):
             try:
                 diagnosis = self.get_online_diagnosis(disease_name, language)
                 
@@ -126,10 +160,20 @@ class RAGService:
         Get diagnosis from Gemini or OpenAI API
         Args:
             disease_name: Name of the disease
-            language: Language code
+            language: Language code (en, hi, kn)
         Returns:
             dict: Diagnosis information
         """
+        # Map language codes to full language names for better LLM understanding
+        language_map = {
+            'en': 'English',
+            'hi': 'Hindi',
+            'kn': 'Kannada'
+        }
+        language_name = language_map.get(language.lower(), 'English')
+        
+        print(f"🌐 [RAG] Getting diagnosis in {language_name} (code: {language})")
+        
         # Try Gemini first (Google) with model fallback
         try:
             import google.generativeai as genai
@@ -170,30 +214,40 @@ class RAGService:
                 
                 prompt = f"""You are a plant pathology expert. Provide detailed information about the plant disease: {disease_name}
 
-IMPORTANT: You MUST respond in {language.upper()} language for the description, symptoms, treatment, prevention, and care_recommendations.
+🌐 CRITICAL LANGUAGE REQUIREMENT:
+You MUST write ALL content in **{language_name}** language. This is NON-NEGOTIABLE.
+Language code: {language}
+Language name: {language_name}
+
+The farmer needs information in their native {language_name} language.
 
 Please respond in JSON format with the following structure:
 {{
     "name": "{disease_name}",
-    "scientific_name": "scientific name",
-    "description": "detailed description in {language} - use bold markdown **for key terms** like disease names, affected parts",
-    "symptoms": ["symptom 1 in {language}", "symptom 2 in {language}", ...],
+    "scientific_name": "scientific name in Latin",
+    "description": "detailed description - WRITE IN {language_name} ONLY - use bold markdown **for key terms**",
+    "symptoms": ["symptom 1 - WRITE IN {language_name}", "symptom 2 - WRITE IN {language_name}", "symptom 3 - WRITE IN {language_name}"],
     "treatment": {{
-        "organic": ["organic method 1 in {language}", "organic method 2 in {language}", ...],
-        "chemical": ["chemical method 1 in {language}", "chemical method 2 in {language}", ...],
-        "cultural": ["cultural practice 1 in {language}", "cultural practice 2 in {language}", ...]
+        "organic": ["organic method 1 - WRITE IN {language_name}", "organic method 2 - WRITE IN {language_name}"],
+        "chemical": ["chemical method 1 - WRITE IN {language_name}", "chemical method 2 - WRITE IN {language_name}"],
+        "cultural": ["cultural practice 1 - WRITE IN {language_name}", "cultural practice 2 - WRITE IN {language_name}"]
     }},
-    "prevention": ["prevention 1 in {language}", "prevention 2 in {language}", ...],
-    "care_recommendations": ["EXACTLY 4 care recommendations in {language} - use **bold** for key action words", "recommendation 2", "recommendation 3", "recommendation 4"],
+    "prevention": ["prevention 1 - WRITE IN {language_name}", "prevention 2 - WRITE IN {language_name}", "prevention 3 - WRITE IN {language_name}"],
+    "care_recommendations": ["care tip 1 - WRITE IN {language_name} - use **bold** for action words", "care tip 2 - WRITE IN {language_name}", "care tip 3 - WRITE IN {language_name}", "care tip 4 - WRITE IN {language_name}"],
     "severity": "low|medium|high",
     "affected_plants": ["plant 1", "plant 2", ...]
 }}
 
-CRITICAL REQUIREMENTS:
-1. ALL text content MUST be in {language.upper()} language (except field names and "name"/"scientific_name" which stay in English/Latin)
-2. Use **markdown bold** for important keywords like disease names, plant parts, key actions
-3. care_recommendations MUST contain EXACTLY 4 points
-4. Provide accurate, actionable information for farmers in their local language"""
+STRICT REQUIREMENTS:
+1. 🚨 EVERY text field (description, symptoms, treatment, prevention, care_recommendations) MUST be written in {language_name}
+2. 🚨 Only keep "name" and "scientific_name" in English/Latin - everything else MUST be {language_name}
+3. Use **bold markdown** for important keywords
+4. Provide EXACTLY 4 care_recommendations
+5. Make content practical for farmers
+6. DO NOT translate field names (like "description", "symptoms") - only translate the VALUES
+
+Example for Hindi: symptoms should be ["पत्तियों पर भूरे धब्बे", "तने में सड़न", ...] not ["symptoms 1", "symptoms 2"]
+Example for Kannada: symptoms should be ["ಎಲೆಗಳ ಮೇಲೆ ಕಂದು ಬಣ್ಣದ ಕಲೆಗಳು", "ಕಾಂಡದಲ್ಲಿ ಕೊಳೆತ", ...] not ["symptoms 1", "symptoms 2"]"""
 
                 response = model.generate_content(prompt)
                 diagnosis_text = response.text
@@ -218,35 +272,38 @@ CRITICAL REQUIREMENTS:
             
             prompt = f"""You are a plant pathology expert. Provide detailed information about the plant disease: {disease_name}
 
-IMPORTANT: You MUST respond in {language.upper()} language for the description, symptoms, treatment, prevention, and care_recommendations.
+🌐 CRITICAL LANGUAGE REQUIREMENT:
+You MUST write ALL content in **{language_name}** language. This is NON-NEGOTIABLE.
+Language code: {language}
+Language name: {language_name}
 
 Please respond in JSON format with the following structure:
 {{
     "name": "{disease_name}",
-    "scientific_name": "scientific name",
-    "description": "detailed description in {language} - use bold markdown **for key terms** like disease names, affected parts",
-    "symptoms": ["symptom 1 in {language}", "symptom 2 in {language}", ...],
+    "scientific_name": "scientific name in Latin",
+    "description": "detailed description - WRITE IN {language_name} ONLY - use bold markdown **for key terms**",
+    "symptoms": ["symptom 1 - WRITE IN {language_name}", "symptom 2 - WRITE IN {language_name}", "symptom 3 - WRITE IN {language_name}"],
     "treatment": {{
-        "organic": ["organic method 1 in {language}", "organic method 2 in {language}", ...],
-        "chemical": ["chemical method 1 in {language}", "chemical method 2 in {language}", ...],
-        "cultural": ["cultural practice 1 in {language}", "cultural practice 2 in {language}", ...]
+        "organic": ["organic method 1 - WRITE IN {language_name}", "organic method 2 - WRITE IN {language_name}"],
+        "chemical": ["chemical method 1 - WRITE IN {language_name}", "chemical method 2 - WRITE IN {language_name}"],
+        "cultural": ["cultural practice 1 - WRITE IN {language_name}", "cultural practice 2 - WRITE IN {language_name}"]
     }},
-    "prevention": ["prevention 1 in {language}", "prevention 2 in {language}", ...],
-    "care_recommendations": ["EXACTLY 4 care recommendations in {language} - use **bold** for key action words", "recommendation 2", "recommendation 3", "recommendation 4"],
+    "prevention": ["prevention 1 - WRITE IN {language_name}", "prevention 2 - WRITE IN {language_name}"],
+    "care_recommendations": ["care tip 1 - WRITE IN {language_name} - use **bold** for action words", "care tip 2 - WRITE IN {language_name}", "care tip 3 - WRITE IN {language_name}", "care tip 4 - WRITE IN {language_name}"],
     "severity": "low|medium|high",
     "affected_plants": ["plant 1", "plant 2", ...]
 }}
 
-CRITICAL REQUIREMENTS:
-1. ALL text content MUST be in {language.upper()} language (except field names and "name"/"scientific_name" which stay in English/Latin)
-2. Use **markdown bold** for important keywords like disease names, plant parts, key actions
-3. care_recommendations MUST contain EXACTLY 4 points
-4. Provide accurate, actionable information for farmers in their local language"""
+STRICT REQUIREMENTS:
+1. 🚨 EVERY text field MUST be written in {language_name}
+2. Only keep field names and "name"/"scientific_name" in English - all other content in {language_name}
+3. Use **bold markdown** for important keywords
+4. Provide EXACTLY 4 care_recommendations"""
 
             response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": f"You are a plant pathology expert providing disease information in JSON format. Always respond in {language} language."},
+                    {"role": "system", "content": f"You are a plant pathology expert. You MUST respond in {language_name} language for ALL content fields."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,

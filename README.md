@@ -36,13 +36,12 @@ We're excited to innovate, collaborate, and build something that creates real-wo
 [📱 Features](#-features) • [🏗️ Architecture](#️-architecture) • [🚀 Quick Start](#-quick-start) • [📸 Screenshots](#-screenshots) • [👥 Team](#-team-vesire)
 ### 👥 Team Members
 
-- **Ananya** — Team Lead  
+**Ananya** — Team Lead  
 
-</div>- **Sruthi**  
+**Sruthi**  
 
-- **Joel**  
-
----- **Srijan**  
+**Joel**  
+**Srijan**  
 
 - **Rohan**
 

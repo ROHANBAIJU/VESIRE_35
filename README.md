@@ -18,7 +18,8 @@
 
 [![YOLOv8](https://img.shields.io/badge/YOLOv8-AI%20Detection-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://github.com/ultralytics/ultralytics)
 
-[![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)## 🧠 Team VESIRE — SJBIT Hackathon 2025
+[![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+## 🧠 Team VESIRE — SJBIT Hackathon 2025
 
 
 

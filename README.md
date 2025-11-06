@@ -17,7 +17,7 @@
 </div>
 
 <div align="center">
-  <img src="UI PICS FOR README/IMG-20251106-WA0014.jpg" alt="AgriScan Banner" width="800"/>
+  <img src="UI PICS FOR README/IMG-20251106-WA0014.jpg" alt="AgriScan Banner" width="100"/>
 </div>
 
 <p align="center">

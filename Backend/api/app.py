@@ -65,14 +65,17 @@ def get_models():
 @app.route('/api/detect', methods=['POST'])
 def detect_disease():
     """
-    Detect plant diseases in uploaded image
+    Detect plant diseases in uploaded image with primary detection tracking
     
     Request Body:
     {
         "image": "base64_encoded_image",
         "confidence_threshold": 0.5,  // optional
         "save_history": true,  // optional
-        "user_id": "user-123"  // optional, required if save_history=true
+        "user_id": "user-123",  // optional, required if save_history=true
+        "track_primary": true,  // optional, enable primary detection tracking
+        "auto_diagnose": true,  // optional, automatically get diagnosis for primary detection
+        "language": "en"  // optional, language for diagnosis (en, kn)
     }
     
     Response:
@@ -80,6 +83,8 @@ def detect_disease():
         "success": true,
         "detection_id": "uuid",
         "detections": [...],
+        "primary_detection": {...},  // Most frequently detected disease
+        "diagnosis": {...},  // Diagnosis for primary detection (if auto_diagnose=true)
         "image_size": {...},
         "timing": {...}
     }
@@ -102,15 +107,20 @@ def detect_disease():
         confidence_threshold = data.get('confidence_threshold', config.CONFIDENCE_THRESHOLD)
         save_history = data.get('save_history', False)
         user_id = data.get('user_id')
+        track_primary = data.get('track_primary', True)
+        auto_diagnose = data.get('auto_diagnose', True)
+        language = data.get('language', 'en')
         
         print(f'🟢 [FLASK] Parameters: confidence={confidence_threshold}, save={save_history}, user={user_id}')
+        print(f'🟢 [FLASK] Tracking: primary={track_primary}, auto_diagnose={auto_diagnose}, language={language}')
         print(f'🟢 [FLASK] Image data size: {len(image_data)} characters')
         
-        # Run detection
-        print('🟢 [FLASK] Running TFLite model detection...')
+        # Run detection with primary tracking
+        print('🟢 [FLASK] Running YOLO model detection with primary tracking...')
         result = model_service.detect(
             image_data=image_data,
-            confidence_threshold=confidence_threshold
+            confidence_threshold=confidence_threshold,
+            track_primary=track_primary
         )
         
         if not result['success']:
@@ -121,9 +131,41 @@ def detect_disease():
         for i, det in enumerate(result['detections']):
             print(f'🟢 [FLASK]    [{i+1}] {det["class_name"]}: {det["confidence"]:.2%}')
         
+        # Check for primary detection
+        primary_detection = result.get('primary_detection')
+        if primary_detection:
+            print(f'🟢 [FLASK] 🎯 PRIMARY DETECTION: {primary_detection["class_name"]}')
+            print(f'🟢 [FLASK]    Confidence: {primary_detection["confidence"]:.2%}')
+            stats = primary_detection.get('tracking_stats', {})
+            if stats:
+                print(f'🟢 [FLASK]    Occurrence: {stats["occurrence_count"]}/{stats["total_frames"]} frames ({stats["occurrence_percentage"]}%)')
+                print(f'🟢 [FLASK]    Stable: {stats["is_stable"]}')
+        
+        # Auto-diagnose primary detection if enabled
+        diagnosis = None
+        if auto_diagnose and primary_detection:
+            disease_name = primary_detection['class_name']
+            print(f'🟢 [FLASK] 🔍 Auto-diagnosing primary detection: {disease_name}...')
+            
+            try:
+                diagnosis_result = rag_service.get_diagnosis(
+                    disease_name=disease_name,
+                    language=language,
+                    use_cache=True
+                )
+                
+                if diagnosis_result['success']:
+                    diagnosis = diagnosis_result['disease']
+                    print(f'🟢 [FLASK] ✅ Diagnosis retrieved from {diagnosis_result["source"]}')
+                else:
+                    print(f'🟢 [FLASK] ⚠️  Diagnosis not found: {diagnosis_result.get("error")}')
+            except Exception as e:
+                print(f'🟢 [FLASK] ⚠️  Diagnosis failed: {e}')
+        
         # Generate detection ID
         detection_id = str(uuid.uuid4())
         result['detection_id'] = detection_id
+        result['diagnosis'] = diagnosis
         
         # Save to history if requested
         if save_history and user_id:
@@ -133,6 +175,7 @@ def detect_disease():
                     user_id=user_id,
                     detections=result['detections'],
                     image_base64=image_data,  # Store for offline access
+                    diagnosis=diagnosis  # Store diagnosis too
                 )
                 print('🟢 [FLASK] ✅ Saved to history')
             except Exception as e:
@@ -177,7 +220,8 @@ def detect_batch():
         for i, image_data in enumerate(images):
             result = model_service.detect(
                 image_data=image_data,
-                confidence_threshold=confidence_threshold
+                confidence_threshold=confidence_threshold,
+                track_primary=False  # Disable tracking for batch
             )
             result['image_index'] = i
             results.append(result)
@@ -186,6 +230,122 @@ def detect_batch():
             'success': True,
             'results': results,
             'total_images': len(images)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/detect/reset-tracking', methods=['POST'])
+def reset_tracking():
+    """
+    Reset primary detection tracking history
+    Useful when switching to a different plant or starting a new detection session
+    
+    Response:
+    {
+        "success": true,
+        "message": "Tracking history reset"
+    }
+    """
+    try:
+        model_service.reset_tracking()
+        print('🟢 [FLASK] ✅ Detection tracking history reset')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Tracking history reset'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/detect/continuous', methods=['POST'])
+def continuous_detection():
+    """
+    Continuous detection endpoint optimized for real-time scenarios (webcam, video)
+    Tracks primary detection across multiple frames and provides diagnosis when stable
+    
+    Request Body:
+    {
+        "image": "base64_encoded_image",
+        "confidence_threshold": 0.5,  // optional
+        "language": "en",  // optional
+        "min_stability": 5  // optional, minimum frames for stable detection
+    }
+    
+    Response:
+    {
+        "success": true,
+        "detections": [...],
+        "primary_detection": {...},
+        "diagnosis": {...},  // Only included when primary detection is stable
+        "is_stable": bool,  // Whether primary detection is stable enough for diagnosis
+        "timing": {...}
+    }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'image' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'No image data provided'
+            }), 400
+        
+        # Get parameters
+        image_data = data['image']
+        confidence_threshold = data.get('confidence_threshold', config.CONFIDENCE_THRESHOLD)
+        language = data.get('language', 'en')
+        min_stability = data.get('min_stability', 5)
+        
+        # Run detection with tracking
+        result = model_service.detect(
+            image_data=image_data,
+            confidence_threshold=confidence_threshold,
+            track_primary=True
+        )
+        
+        if not result['success']:
+            return jsonify(result), 500
+        
+        # Check if primary detection is stable
+        primary_detection = result.get('primary_detection')
+        is_stable = False
+        diagnosis = None
+        
+        if primary_detection:
+            stats = primary_detection.get('tracking_stats', {})
+            is_stable = stats.get('occurrence_count', 0) >= min_stability
+            
+            # Get diagnosis only when stable (to avoid unnecessary API calls)
+            if is_stable:
+                disease_name = primary_detection['class_name']
+                
+                try:
+                    diagnosis_result = rag_service.get_diagnosis(
+                        disease_name=disease_name,
+                        language=language,
+                        use_cache=True
+                    )
+                    
+                    if diagnosis_result['success']:
+                        diagnosis = diagnosis_result['disease']
+                except Exception as e:
+                    print(f'⚠️  Diagnosis failed: {e}')
+        
+        return jsonify({
+            'success': True,
+            'detections': result['detections'],
+            'primary_detection': primary_detection,
+            'diagnosis': diagnosis,
+            'is_stable': is_stable,
+            'timing': result['timing']
         })
         
     except Exception as e:

@@ -1,6 +1,6 @@
 """
 AgriScan Backend - YOLO Model Service
-Handles plant disease detection using YOLO model
+Handles plant disease detection using YOLO model with primary detection tracking
 """
 
 import time
@@ -10,6 +10,7 @@ import numpy as np
 from PIL import Image
 from pathlib import Path
 import sys
+from collections import Counter
 
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
@@ -18,7 +19,7 @@ from config import config
 
 
 class YOLOModelService:
-    """Service for YOLO model inference"""
+    """Service for YOLO model inference with primary detection tracking"""
     
     def __init__(self):
         """Initialize YOLO model"""
@@ -26,6 +27,10 @@ class YOLOModelService:
         self.class_names = []
         self.load_model()
         self.load_labels()
+        
+        # Primary detection tracking (for continuous detection scenarios)
+        self.detection_history = []  # Store recent detection results
+        self.history_size = 45  # Track last 45 frames/images
     
     def load_model(self):
         """Load YOLO model"""
@@ -97,21 +102,23 @@ class YOLOModelService:
         except Exception as e:
             raise ValueError(f"Error preprocessing image: {e}")
     
-    def detect(self, image_data, confidence_threshold=None, iou_threshold=None):
+    def detect(self, image_data, confidence_threshold=None, iou_threshold=None, track_primary=True):
         """
-        Detect plant diseases in image
+        Detect plant diseases in image with primary detection tracking
         Args:
             image_data: Image data (base64, PIL, numpy, bytes)
             confidence_threshold: Minimum confidence score (default from config)
             iou_threshold: IoU threshold for NMS (default from config)
+            track_primary: Enable primary detection tracking (default True)
         Returns:
-            dict: Detection results
+            dict: Detection results with primary detection highlighted
         """
         if self.model is None:
             return {
                 'success': False,
                 'error': 'Model not loaded',
-                'detections': []
+                'detections': [],
+                'primary_detection': None
             }
         
         try:
@@ -137,11 +144,18 @@ class YOLOModelService:
             
             # Format results
             detections = self.format_results(results[0], image.size)
+            
+            # Track primary detection if enabled
+            primary_detection = None
+            if track_primary and detections:
+                primary_detection = self.update_primary_detection(detections)
+            
             total_time = time.time() - start_time
             
             return {
                 'success': True,
                 'detections': detections,
+                'primary_detection': primary_detection,
                 'image_size': {
                     'width': image.size[0],
                     'height': image.size[1]
@@ -162,8 +176,59 @@ class YOLOModelService:
             return {
                 'success': False,
                 'error': str(e),
-                'detections': []
+                'detections': [],
+                'primary_detection': None
             }
+    
+    def update_primary_detection(self, detections):
+        """
+        Track and identify primary detection (most frequently detected disease)
+        Args:
+            detections: List of current frame detections
+        Returns:
+            dict: Primary detection with occurrence statistics
+        """
+        # Add current detections to history
+        current_classes = [det['class_id'] for det in detections]
+        self.detection_history.append(current_classes)
+        
+        # Keep only recent history
+        if len(self.detection_history) > self.history_size:
+            self.detection_history.pop(0)
+        
+        # Count occurrences of each class
+        class_counter = Counter()
+        for frame_classes in self.detection_history:
+            for cls_id in frame_classes:
+                class_counter[cls_id] += 1
+        
+        # Determine primary detection (most frequent)
+        if not class_counter:
+            return None
+        
+        primary_class_id, occurrence_count = class_counter.most_common(1)[0]
+        
+        # Find the primary detection in current frame
+        primary_detection = None
+        for det in detections:
+            if det['class_id'] == primary_class_id:
+                primary_detection = det.copy()
+                break
+        
+        if primary_detection:
+            # Add tracking statistics
+            primary_detection['tracking_stats'] = {
+                'occurrence_count': occurrence_count,
+                'total_frames': len(self.detection_history),
+                'occurrence_percentage': round((occurrence_count / sum(class_counter.values())) * 100, 2),
+                'is_stable': occurrence_count >= 5  # Stable if detected in 5+ frames
+            }
+        
+        return primary_detection
+    
+    def reset_tracking(self):
+        """Reset primary detection tracking history"""
+        self.detection_history = []
     
     def format_results(self, result, image_size):
         """

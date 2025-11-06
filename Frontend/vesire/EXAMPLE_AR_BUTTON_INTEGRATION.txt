@@ -1,0 +1,176 @@
+// EXAMPLE: How to add AR Detection button to scan_screen.dart
+//
+// Add this import at the top of scan_screen.dart:
+//
+// import 'ar_detection_screen.dart';
+//
+// Then add this button in the bottom controls section,
+// right before or after the capture button.
+
+// Option 1: Add as a separate button beside the capture button
+Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    // AR Detection Button
+    GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ARDetectionScreen(),
+          ),
+        );
+      },
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.blue,
+            width: 3,
+          ),
+        ),
+        child: Container(
+          margin: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.blue,
+          ),
+          child: const Icon(
+            Icons.view_in_ar,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+      ),
+    ),
+    
+    const SizedBox(width: 32),
+    
+    // Existing Capture button
+    GestureDetector(
+      onTap: _isDetecting ? null : _captureAndDetect,
+      child: Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: _isDetecting ? Colors.grey : Colors.white,
+            width: 4,
+          ),
+        ),
+        child: Container(
+          margin: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _isDetecting ? Colors.grey : const Color(0xFF4CAF50),
+          ),
+          child: _isDetecting
+              ? const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : const Icon(
+                  Icons.camera_alt,
+                  color: Colors.white,
+                  size: 32,
+                ),
+        ),
+      ),
+    ),
+  ],
+),
+
+// OR
+
+// Option 2: Add as a floating button in top-right corner
+// Add this inside the Stack in the build method:
+
+Positioned(
+  top: 80,
+  right: 20,
+  child: SafeArea(
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ARDetectionScreen(),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(28),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.blue.shade600,
+                Colors.blue.shade800,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(0.4),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(
+                Icons.view_in_ar,
+                color: Colors.white,
+                size: 24,
+              ),
+              SizedBox(width: 8),
+              Text(
+                'AR Mode',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  ),
+),
+
+// OR
+
+// Option 3: Add as a mode toggle in the top bar
+// Replace one of the existing IconButtons in the top bar with:
+
+IconButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ARDetectionScreen(),
+      ),
+    );
+  },
+  icon: const Icon(
+    Icons.view_in_ar,
+    color: Colors.white,
+    size: 26,
+  ),
+  tooltip: 'AR Detection Mode',
+),
+
+// Choose the option that best fits your UI design!
+// The AR Detection screen will open with its own camera and controls.

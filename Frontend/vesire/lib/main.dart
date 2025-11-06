@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
@@ -6,13 +8,28 @@ import 'services/notification_service.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/language_provider.dart';
 import 'providers/analytics_provider.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/signup_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Initialize Firebase with platform-specific options when available.
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // If initialization fails (for unsupported platforms or missing values)
+    // the app will continue to run in a limited mode. Log the error so it's
+    // easier to debug during setup.
+    // ignore: avoid_print
+    print('Firebase initialize error: $e');
+  }
+
   // Initialize notification service
   await NotificationService().initialize();
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -52,6 +69,10 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Roboto',
           ),
           home: const SplashScreen(),
+          routes: {
+            '/login': (_) => const LoginScreen(),
+            '/signup': (_) => const SignupScreen(),
+          },
         );
       },
     );

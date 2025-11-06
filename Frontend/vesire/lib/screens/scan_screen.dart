@@ -8,9 +8,11 @@ import '../utils/snackbar_utils.dart';
 import '../models/detection_response.dart';
 import '../models/diagnosis_response.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/language_provider.dart';
 import '../providers/analytics_provider.dart';
 import '../widgets/markdown_text.dart';
+import '../services/tts_service.dart';
 import 'analytics_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -28,6 +30,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   File? _lastCapturedImage;
   final ApiService _apiService = ApiService();
   bool _isFlashOn = false;
+  bool _ttsEnabled = true;
   
   // Real-time detection state
   Timer? _detectionTimer;
@@ -40,8 +43,31 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _loadTtsPref();
     WidgetsBinding.instance.addObserver(this);
     _initializeCamera();
+  }
+
+  static const String _kTtsPrefKey = 'tts_enabled';
+
+  Future<void> _loadTtsPref() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final val = prefs.getBool(_kTtsPrefKey) ?? true;
+      if (mounted) setState(() => _ttsEnabled = val);
+    } catch (e) {
+      // ignore - keep default
+    }
+  }
+
+  Future<void> _setTtsPref(bool enabled) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kTtsPrefKey, enabled);
+    } catch (e) {
+      // ignore
+    }
+    if (mounted) setState(() => _ttsEnabled = enabled);
   }
 
   @override
@@ -231,6 +257,13 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
               ? diagnosis.disease.careRecommendations 
               : diagnosis.disease.prevention,
         );
+
+        // Speak a short summary using TTS (non-blocking) if enabled
+        if (_ttsEnabled) {
+          final tts = TtsService();
+          final speakMsg = '${diagnosis.disease.name}. ${diagnosis.disease.description.split('.').first}.';
+          tts.speak(speakMsg);
+        }
         
         if (mounted) {
           setState(() {
@@ -650,13 +683,13 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
               ),
             ),
 
-          // Top bar
+          // Top bar: Exit (left) | Flash (center) | Voice toggle & test (right)
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Exit - top left
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(
@@ -665,6 +698,15 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                       size: 30,
                     ),
                   ),
+
+                  // Spacer to push flash to center
+                  const Expanded(
+                    child: Center(
+                      child: SizedBox.shrink(),
+                    ),
+                  ),
+
+                  // Flash - centered
                   IconButton(
                     onPressed: _toggleFlash,
                     icon: Icon(
@@ -672,6 +714,32 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                       color: Colors.white,
                       size: 30,
                     ),
+                  ),
+
+                  // Right controls: test button + persistent TTS toggle
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          // Quick voice test
+                          TtsService().speak('This is a voice test. Vesire is speaking in English.');
+                        },
+                        icon: const Icon(
+                          Icons.volume_up,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                        tooltip: 'Voice test',
+                      ),
+                      // Toggle placed last so it appears at the top-right
+                      Switch.adaptive(
+                        value: _ttsEnabled,
+                        onChanged: (v) => _setTtsPref(v),
+                        activeColor: Colors.white,
+                        inactiveThumbColor: Colors.white54,
+                      ),
+                    ],
                   ),
                 ],
               ),

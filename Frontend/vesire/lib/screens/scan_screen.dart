@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import '../services/notification_service.dart';
 import '../services/api_service.dart';
+import '../services/hybrid_detection_service.dart';
 import '../utils/snackbar_utils.dart';
 import '../models/detection_response.dart';
 import '../models/diagnosis_response.dart';
@@ -13,7 +14,7 @@ import '../providers/language_provider.dart';
 import '../providers/analytics_provider.dart';
 import '../widgets/markdown_text.dart';
 import '../services/tts_service.dart';
-import 'analytics_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -29,16 +30,18 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   bool _isDetecting = false;
   File? _lastCapturedImage;
   final ApiService _apiService = ApiService();
+  final HybridDetectionService _hybridService = HybridDetectionService();
   bool _isFlashOn = false;
   bool _ttsEnabled = true;
   
   // Real-time detection state
   Timer? _detectionTimer;
   DetectionResponse? _latestDetection;
-  bool _showNavigationPrompt = false;
   bool _isRealTimeDetecting = false;
-  bool _isGettingDiagnosis = false;
   DiagnosisResponse? _currentDiagnosis;
+  bool _isDetectionActive = false; // Controls whether detection loop is running
+  String? _lastDiagnosedDisease; // Track which disease was last diagnosed to prevent re-diagnosis
+  bool _analysisReady = false; // NEW: True when diagnosis completes, shows checkmark
 
   @override
   void initState() {
@@ -125,8 +128,12 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
           _isCameraInitialized = true;
         });
         
-        // Start real-time detection
-        _startRealTimeDetection();
+        // Initialize model but DON'T auto-start detection - wait for user tap
+        _hybridService.initializeOnDevice().then((_) {
+          print('✅ [FLUTTER] On-device model ready (tap green button to start)');
+        }).catchError((e) {
+          print('⚠️ [FLUTTER] On-device init failed: $e');
+        });
       }
     } catch (e) {
       print('Error initializing camera: $e');
@@ -138,20 +145,25 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   }
   
   void _startRealTimeDetection() {
-    print('🚀 [FLUTTER] Starting real-time detection...');
-    _detectionTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {  // Changed from 3 to 5 seconds
-      if (!mounted) {
+    if (_isDetectionActive) return; // Already running
+    
+    setState(() => _isDetectionActive = true);
+    
+    // Initialize on-device detection
+    _hybridService.initializeOnDevice();
+    
+    _detectionTimer = Timer.periodic(const Duration(milliseconds: 300), (timer) async {
+      if (!mounted || !_isDetectionActive) {
         timer.cancel();
         return;
       }
       
-      // CHECK: Camera controller must exist AND be initialized AND not disposed
+      // CHECK: Camera controller must exist AND be initialized
       if (_cameraController == null || 
           !_cameraController!.value.isInitialized || 
           !_isCameraInitialized || 
           _isDetecting || 
           _isRealTimeDetecting) {
-        print('⏸️ [FLUTTER] Skipping detection cycle (camera not ready)');
         return;
       }
       
@@ -159,11 +171,8 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
         if (!mounted) return;
         setState(() => _isRealTimeDetecting = true);
         
-        print('📸 [FLUTTER] Attempting to capture frame...');
-        
         // Double-check before capture
         if (_cameraController == null || !_cameraController!.value.isInitialized) {
-          print('❌ [FLUTTER] Camera controller disposed before capture');
           setState(() => _isRealTimeDetecting = false);
           return;
         }
@@ -172,17 +181,11 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
         final XFile image = await _cameraController!.takePicture();
         final File imageFile = File(image.path);
         
-        print('📸 [FLUTTER] Frame captured successfully, sending to backend...');
-        
-        // Send to backend for detection
-        final response = await _apiService.detectDisease(
+        // Use hybrid service for REAL-TIME detection
+        final response = await _hybridService.detectRealtime(
           imageFile,
           confidenceThreshold: 0.4,
-          userId: 'user-123',
-          saveHistory: false,
         );
-        
-        print('✅ [FLUTTER] Backend response received: ${response.detections.length} detections');
         
         if (!mounted) {
           imageFile.delete();
@@ -193,14 +196,23 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
           setState(() {
             _latestDetection = response;
           });
-          print('🎯 [FLUTTER] Detections found: ${response.detections.map((d) => '${d.className}(${(d.confidence * 100).toStringAsFixed(1)}%)').join(', ')}');
           
-          // Trigger RAG diagnosis (async)
-          _triggerDiagnosisAndShowButton(response.detections.first.className);
+          // Get primary info to check if stable
+          final primaryInfo = _hybridService.getPrimaryInfo();
+          final isStable = primaryInfo['is_stable'] as bool;
+          final primaryDetection = primaryInfo['primary_detection'] as String?;
+          
+          // If stable AND not already diagnosed, get diagnosis
+          if (isStable && 
+              primaryDetection != null && 
+              _lastDiagnosedDisease != primaryDetection) {
+            print('🎯 [FLUTTER] New stable primary: $primaryDetection (starting diagnosis)');
+            _triggerDiagnosisAndShowButton(primaryDetection);
+          }
         } else {
+          print('🎯 [FLUTTER] ⚠️ NO DETECTIONS in this frame');
           setState(() {
             _latestDetection = null;
-            _showNavigationPrompt = false;
           });
         }
         
@@ -218,15 +230,13 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   }
   
   void _triggerDiagnosisAndShowButton(String diseaseName) async {
-    if (_isGettingDiagnosis) return; // Don't trigger multiple times
+    if (_analysisReady) return; // Already have analysis ready
     if (!mounted) return;
     
-    setState(() {
-      _isGettingDiagnosis = true;
-      _showNavigationPrompt = false;
-    });
+    // Mark this disease as being diagnosed
+    _lastDiagnosedDisease = diseaseName;
     
-    print('🤖 [FLUTTER] Triggering RAG diagnosis for: $diseaseName');
+    print('🤖 [FLUTTER] ⏳ Starting diagnosis for: $diseaseName');
     
     try {
       final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
@@ -251,7 +261,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
         analyticsProvider.updateFromDetection(
           plantName: diagnosis.disease.name,
           scientificName: diagnosis.disease.scientificName,
-          aiConfidence: _latestDetection!.detections.first.confidence * 100,
+          aiConfidence: (_latestDetection?.detections.first.confidence ?? 0.95) * 100,
           aiSummary: diagnosis.disease.description,
           careRecommendations: diagnosis.disease.careRecommendations.isNotEmpty 
               ? diagnosis.disease.careRecommendations 
@@ -265,19 +275,55 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
           tts.speak(speakMsg);
         }
         
+        // 🎯 DON'T stop detection - just mark analysis as ready
+        print('✅ [FLUTTER] Analysis ready! Button will show checkmark.');
+        
         if (mounted) {
           setState(() {
             _currentDiagnosis = diagnosis;
-            _showNavigationPrompt = true; // NOW show the button
+            _analysisReady = true; // Show checkmark instead of circle
+          });
+        }
+      } else {
+        // No diagnosis found - still show ready state with limited info
+        print('⚠️ [FLUTTER] No diagnosis data found: ${diagnosisResult['error']}');
+        
+        if (mounted) {
+          final loc = AppLocalizations.of(context)!;
+          // Update analytics with basic detection info
+          final analyticsProvider = Provider.of<AnalyticsProvider>(context, listen: false);
+          analyticsProvider.updateFromDetection(
+            plantName: diseaseName,
+            scientificName: 'Unknown',
+            aiConfidence: (_latestDetection?.detections.first.confidence ?? 0.95) * 100,
+            aiSummary: loc.translate('diseaseDetectedMessage'),
+            careRecommendations: [loc.translate('consultExpert')],
+          );
+          
+          setState(() {
+            _analysisReady = true; // Still show checkmark for limited info
           });
         }
       }
       
     } catch (e) {
       print('❌ [FLUTTER] RAG diagnosis error: $e');
-    } finally {
+      
+      // On error, still try to show basic detection info
       if (mounted) {
-        setState(() => _isGettingDiagnosis = false);
+        final loc = AppLocalizations.of(context)!;
+        final analyticsProvider = Provider.of<AnalyticsProvider>(context, listen: false);
+        analyticsProvider.updateFromDetection(
+          plantName: diseaseName,
+          scientificName: 'Unknown',
+          aiConfidence: (_latestDetection?.detections.first.confidence ?? 0.95) * 100,
+          aiSummary: loc.translate('errorFetchingDiagnosis'),
+          careRecommendations: [loc.translate('retryScanning')],
+        );
+        
+        setState(() {
+          _analysisReady = true;
+        });
       }
     }
   }
@@ -434,317 +480,117 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
               ),
             ),
 
-          // Real-time bounding boxes overlay
-          if (_latestDetection != null && _cameraController != null)
+          // Real-time bounding boxes overlay - MAKE THEM SUPER VISIBLE
+          if (_latestDetection != null && _cameraController != null && _latestDetection!.detections.isNotEmpty)
             Positioned.fill(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final screenWidth = constraints.maxWidth;
-                  final screenHeight = constraints.maxHeight;
-                  
-                  return Stack(
-                    children: _latestDetection!.detections.map((detection) {
-                      // YOLO format: center_x, center_y, width, height (normalized 0-1)
-                      final centerX = detection.boundingBox.x * screenWidth;
-                      final centerY = detection.boundingBox.y * screenHeight;
-                      final boxWidth = detection.boundingBox.width * screenWidth;
-                      final boxHeight = detection.boundingBox.height * screenHeight;
-                      
-                      final left = centerX - boxWidth / 2;
-                      final top = centerY - boxHeight / 2;
-                      
-                      return Positioned(
-                        left: left,
-                        top: top,
-                        child: Container(
-                          width: boxWidth,
-                          height: boxHeight,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.red, // RED BOXES as requested
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Stack(
-                            children: [
-                              // Label with confidence - position at top
-                              Positioned(
-                                top: -35,
-                                left: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red, // RED background
-                                    borderRadius: BorderRadius.circular(6),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.3),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        detection.className,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${(detection.confidence * 100).toStringAsFixed(1)}% confidence',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-            ),
-          
-          // Floating navigation button (appears after detection and RAG is called)
-          if (_showNavigationPrompt && _latestDetection != null && _currentDiagnosis != null)
-            Positioned(
-              bottom: 120,
-              left: 20,
-              right: 20,
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.green.shade600,
-                        Colors.green.shade700,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.green.withOpacity(0.4),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.analytics_outlined,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              '✓ Detection Complete',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'AI diagnosis ready to view',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          // Navigate to analytics screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AnalyticsScreen(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.arrow_forward, size: 18),
-                        label: const Text('View'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.green.shade700,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          
-          // Loading indicator when getting diagnosis
-          if (_isGettingDiagnosis && _latestDetection != null)
-            Positioned(
-              bottom: 120,
-              left: 20,
-              right: 20,
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.purple.shade600,
-                        Colors.purple.shade700,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.purple.withOpacity(0.4),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              '🤖 AI Diagnosis',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Getting treatment recommendations...',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+              child: CustomPaint(
+                key: ValueKey('boxes_${_latestDetection!.detections.length}_${DateTime.now().millisecondsSinceEpoch}'),
+                painter: BoundingBoxPainter(
+                  detections: _latestDetection!.detections,
                 ),
               ),
             ),
 
-          // Top bar: Exit (left) | Flash (center) | Voice toggle & test (right)
+          // Top bar: Exit button (top-left only)
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Exit - top left
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 30,
+                  // Exit - top left with better styling
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      shape: BoxShape.circle,
                     ),
-                  ),
-
-                  // Spacer to push flash to center
-                  const Expanded(
-                    child: Center(
-                      child: SizedBox.shrink(),
-                    ),
-                  ),
-
-                  // Flash - centered
-                  IconButton(
-                    onPressed: _toggleFlash,
-                    icon: Icon(
-                      _isFlashOn ? Icons.flash_on : Icons.flash_off,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),
-
-                  // Right controls: test button + persistent TTS toggle
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          // Quick voice test
-                          TtsService().speak('This is a voice test. Vesire is speaking in English.');
-                        },
-                        icon: const Icon(
-                          Icons.volume_up,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                        tooltip: 'Voice test',
+                    child: IconButton(
+                      onPressed: () {
+                        _detectionTimer?.cancel();
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 28,
                       ),
-                      // Toggle placed last so it appears at the top-right
-                      Switch.adaptive(
-                        value: _ttsEnabled,
-                        onChanged: (v) => _setTtsPref(v),
-                        activeColor: Colors.white,
-                        inactiveThumbColor: Colors.white54,
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
             ),
           ),
+
+          // Detection status indicator (top center)
+
+          // Top bar: Exit button (top-left only)
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Exit - top left with better styling
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        _detectionTimer?.cancel();
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Detection status indicator (top center)
+          if (_latestDetection != null && _latestDetection!.detections.isNotEmpty)
+            Positioned(
+              top: 80,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${_latestDetection!.detections.length} detection(s) • ${((_latestDetection!.detections.first.confidence) * 100).toStringAsFixed(0)}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
 
           // Bottom controls
           Positioned(
@@ -757,51 +603,114 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      _isDetecting
-                          ? 'Analyzing...'
-                          : 'Position plant within frame',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 16,
-                      ),
+                    Consumer<LanguageProvider>(
+                      builder: (context, langProvider, child) {
+                        final loc = AppLocalizations.of(context)!;
+                        return Text(
+                          _analysisReady
+                              ? '✅ ${loc.translate('analysisReady')}'
+                              : _isDetectionActive
+                                  ? '🔍 ${loc.translate('scanningDiseases')}'
+                                  : loc.translate('tapToStartDetection'),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 24),
-                    // Capture button
-                    GestureDetector(
-                      onTap: _isDetecting ? null : _captureAndDetect,
+                    // Start/Stop detection button with smooth animation
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (child, animation) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      child: GestureDetector(
+                        key: ValueKey<bool>(_isDetectionActive),
+                        onTap: () {
+                          if (_analysisReady) {
+                            // Analysis ready - STOP detection and return to home to show analytics
+                            print('📊 [FLUTTER] Stopping detection and returning to show analytics');
+                            _detectionTimer?.cancel();
+                            
+                            // Pop back with result to show analytics tab
+                            Navigator.pop(context, true);
+                            
+                          } else if (_isDetectionActive) {
+                            // Manual stop detection
+                            print('⏹️ [FLUTTER] User manually stopped detection');
+                            setState(() {
+                              _isDetectionActive = false;
+                              _latestDetection = null;
+                              _currentDiagnosis = null;
+                              _lastDiagnosedDisease = null; // Clear diagnosis tracking
+                              _analysisReady = false;
+                            });
+                            _detectionTimer?.cancel();
+                          } else {
+                            // Start detection
+                            print('▶️ [FLUTTER] User starting detection');
+                            setState(() {
+                              _latestDetection = null;
+                              _currentDiagnosis = null;
+                              _lastDiagnosedDisease = null; // Clear diagnosis tracking
+                              _analysisReady = false;
+                            });
+                            _startRealTimeDetection();
+                          }
+                        },
                       child: Container(
                         width: 70,
                         height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: _isDetecting
-                                ? Colors.grey
-                                : Colors.white,
+                            color: Colors.white,
                             width: 4,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _analysisReady 
+                                  ? Colors.blue.withOpacity(0.5)
+                                  : _isDetectionActive 
+                                      ? Colors.red.withOpacity(0.4)
+                                      : Colors.green.withOpacity(0.4),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            ),
+                          ],
                         ),
                         child: Container(
                           margin: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _isDetecting
-                                ? Colors.grey
-                                : const Color(0xFF4CAF50),
+                            color: _analysisReady
+                                ? Colors.blue.shade600
+                                : _isDetectionActive
+                                    ? Colors.red.shade600
+                                    : const Color(0xFF4CAF50),
                           ),
-                          child: _isDetecting
-                              ? const Padding(
-                                  padding: EdgeInsets.all(12.0),
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
+                          child: _analysisReady
+                              ? const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.white,
+                                  size: 36,
                                 )
-                              : null,
+                              : _isDetectionActive
+                                  ? const Icon(
+                                      Icons.stop,
+                                      color: Colors.white,
+                                      size: 32,
+                                    )
+                                  : null,
                         ),
+                      ),
                       ),
                     ),
                   ],
@@ -1481,5 +1390,73 @@ class _DetectionResultScreenState extends State<DetectionResultScreen> {
       default:
         return Colors.grey.shade700;
     }
+  }
+}
+
+/// Custom painter for drawing bounding boxes
+class BoundingBoxPainter extends CustomPainter {
+  final List<Detection> detections;
+
+  BoundingBoxPainter({required this.detections});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final detection in detections) {
+      // Get normalized coordinates (0-1)
+      final centerX = detection.boundingBox.x;
+      final centerY = detection.boundingBox.y;
+      final boxWidth = detection.boundingBox.width;
+      final boxHeight = detection.boundingBox.height;
+
+      // Convert to screen coordinates
+      final left = (centerX - boxWidth / 2) * size.width;
+      final top = (centerY - boxHeight / 2) * size.height;
+      final right = (centerX + boxWidth / 2) * size.width;
+      final bottom = (centerY + boxHeight / 2) * size.height;
+
+      // Draw RED bounding box
+      final paint = Paint()
+        ..color = Colors.red
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4.0;
+
+      final rect = Rect.fromLTRB(left, top, right, bottom);
+      canvas.drawRect(rect, paint);
+
+      // Draw label background
+      final labelText = '${detection.className} ${(detection.confidence * 100).toStringAsFixed(0)}%';
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: labelText,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+
+      // Background for text
+      final labelRect = Rect.fromLTWH(
+        left,
+        top - 30,
+        textPainter.width + 16,
+        30,
+      );
+      
+      final labelPaint = Paint()..color = Colors.red;
+      canvas.drawRect(labelRect, labelPaint);
+
+      // Draw text
+      textPainter.paint(canvas, Offset(left + 8, top - 26));
+    }
+  }
+
+  @override
+  bool shouldRepaint(BoundingBoxPainter oldDelegate) {
+    // ALWAYS repaint when detections list changes
+    return true;
   }
 }

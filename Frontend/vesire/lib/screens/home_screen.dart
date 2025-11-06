@@ -51,7 +51,14 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ScanScreen()),
-      );
+      ).then((shouldShowAnalytics) {
+        // If scan screen returns true, switch to analytics tab
+        if (shouldShowAnalytics == true) {
+          setState(() {
+            _selectedIndex = 3; // Analytics tab
+          });
+        }
+      });
     } else {
       setState(() {
         _selectedIndex = index;

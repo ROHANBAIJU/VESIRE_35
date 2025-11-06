@@ -35,6 +35,11 @@ class ConnectivityService {
     }
   }
 
+  /// Check if connected (alias for checkConnectivity)
+  Future<bool> isConnected() async {
+    return await checkConnectivity();
+  }
+
   /// Check connectivity and show snackbar
   Future<void> checkConnectivityWithFeedback(BuildContext context) async {
     // Show loading indicator

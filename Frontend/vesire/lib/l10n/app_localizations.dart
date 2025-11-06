@@ -86,6 +86,16 @@ class AppLocalizations {
       'scans': 'Scans',
       'plants': 'Plants',
       'achievements': 'Achievements',
+      
+      // Scan Screen
+      'analysisReady': 'AI Analysis Ready! Tap to view',
+      'scanningDiseases': 'Scanning for diseases...',
+      'tapToStartDetection': 'Tap to start detection',
+      'noDetections': 'No detections in this frame',
+      'diseaseDetectedMessage': 'Disease detected but detailed information is not available in the knowledge base.',
+      'consultExpert': 'Consult a local agricultural expert for treatment recommendations',
+      'errorFetchingDiagnosis': 'Error fetching diagnosis information. Please check your connection.',
+      'retryScanning': 'Retry scanning or consult a local agricultural expert',
     },
     'hi': {
       // Home Screen
@@ -160,6 +170,16 @@ class AppLocalizations {
       'scans': 'स्कैन',
       'plants': 'पौधे',
       'achievements': 'उपलब्धियां',
+      
+      // Scan Screen
+      'analysisReady': 'एआई विश्लेषण तैयार! देखने के लिए टैप करें',
+      'scanningDiseases': 'रोगों के लिए स्कैन कर रहे हैं...',
+      'tapToStartDetection': 'पहचान शुरू करने के लिए टैप करें',
+      'noDetections': 'इस फ्रेम में कोई पहचान नहीं',
+      'diseaseDetectedMessage': 'रोग पाया गया लेकिन विस्तृत जानकारी उपलब्ध नहीं है।',
+      'consultExpert': 'उपचार सिफारिशों के लिए स्थानीय कृषि विशेषज्ञ से परामर्श करें',
+      'errorFetchingDiagnosis': 'निदान जानकारी प्राप्त करने में त्रुटि। कृपया अपना कनेक्शन जांचें।',
+      'retryScanning': 'फिर से स्कैन करें या स्थानीय कृषि विशेषज्ञ से परामर्श करें',
     },
     'kn': {
       // Home Screen
@@ -234,6 +254,16 @@ class AppLocalizations {
       'scans': 'ಸ್ಕ್ಯಾನ್‌ಗಳು',
       'plants': 'ಸಸ್ಯಗಳು',
       'achievements': 'ಸಾಧನೆಗಳು',
+      
+      // Scan Screen
+      'analysisReady': 'AI ವಿಶ್ಲೇಷಣೆ ಸಿದ್ಧವಾಗಿದೆ! ನೋಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ',
+      'scanningDiseases': 'ರೋಗಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡುತ್ತಿದೆ...',
+      'tapToStartDetection': 'ಪತ್ತೆ ಪ್ರಾರಂಭಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ',
+      'noDetections': 'ಈ ಫ್ರೇಮ್‌ನಲ್ಲಿ ಯಾವುದೇ ಪತ್ತೆಯಾಗಿಲ್ಲ',
+      'diseaseDetectedMessage': 'ರೋಗ ಪತ್ತೆಯಾಗಿದೆ ಆದರೆ ವಿವರ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ.',
+      'consultExpert': 'ಚಿಕಿತ್ಸೆ ಶಿಫಾರಸುಗಳಿಗಾಗಿ ಸ್ಥಳೀಯ ಕೃಷಿ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ',
+      'errorFetchingDiagnosis': 'ರೋಗನಿರ್ಣಯ ಮಾಹಿತಿ ಪಡೆಯುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ.',
+      'retryScanning': 'ಮತ್ತೆ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಅಥವಾ ಸ್ಥಳೀಯ ಕೃಷಿ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ',
     },
   };
 

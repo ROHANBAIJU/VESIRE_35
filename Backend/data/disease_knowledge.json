@@ -298,5 +298,50 @@
     ],
     "severity": "medium",
     "affected_plants": ["Bell pepper", "Chili pepper", "Tomato"]
+  },
+  
+  "grape leaf black rot": {
+    "name": "Grape Leaf Black Rot",
+    "scientific_name": "Guignardia bidwellii",
+    "description": "Black rot is one of the most serious diseases of cultivated grapes. The fungus attacks all green parts of the vine, causing significant yield losses if not controlled. It thrives in warm, humid weather conditions.",
+    "symptoms": [
+      "Small, circular reddish-brown spots on leaves with dark borders",
+      "Spots enlarge and develop tan centers with dark margins",
+      "Black pycnidia (fungal structures) appear in spot centers",
+      "Infected berries shrivel into hard, black mummies",
+      "Lesions on young shoots and tendrils",
+      "Premature leaf drop in severe infections"
+    ],
+    "treatment": {
+      "organic": [
+        "Apply copper-based fungicides during dormant season",
+        "Use sulfur sprays as preventive measure",
+        "Apply neem oil during early infection stages",
+        "Remove and destroy all mummified berries and infected plant parts"
+      ],
+      "chemical": [
+        "Apply mancozeb or captan fungicides",
+        "Use myclobutanil or tebuconazole for systemic protection",
+        "Apply chlorothalonil during bloom and fruit development",
+        "Rotate between different fungicide classes to prevent resistance"
+      ],
+      "cultural": [
+        "Prune vines to improve air circulation",
+        "Train vines on trellises to keep fruit off ground",
+        "Remove infected leaves and fruits immediately",
+        "Maintain proper canopy management"
+      ]
+    },
+    "prevention": [
+      "Remove all mummified berries from vines and ground during winter",
+      "Prune out infected canes during dormant season",
+      "Apply dormant copper sprays before bud break",
+      "Keep vineyard floor clean and free of debris",
+      "Ensure good air circulation through proper spacing and training",
+      "Apply preventive fungicides from bud break through bloom",
+      "Monitor weather and spray before rain events"
+    ],
+    "severity": "high",
+    "affected_plants": ["Grape", "Grapevine"]
   }
 }

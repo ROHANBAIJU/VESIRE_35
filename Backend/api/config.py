@@ -50,8 +50,8 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max upload
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
     
-    # CORS
-    CORS_ORIGINS = ['*']  # Allow all origins for development
+    # CORS - Allow local and production frontends
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*').split(',') if os.getenv('CORS_ORIGINS') else ['*']
     
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')

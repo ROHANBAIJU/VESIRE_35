@@ -1,0 +1,19 @@
+# Render ignore file - exclude large/unnecessary files from deployment
+DATASET/
+runs/
+unified_dataset/
+*.pt
+!models/agriscan_combined/weights/best.pt
+yolo_dataset/
+test_*.py
+*.pyc
+__pycache__/
+.venv/
+venv/
+.env.local
+*.log
+*.csv
+*.md
+*.txt
+!requirements.txt
+!runtime.txt

@@ -610,18 +610,25 @@ def internal_error(error):
 # ============================================================================
 
 if __name__ == '__main__':
+    import os
+    
+    # Get port from environment (Render provides this) or use config default
+    port = int(os.environ.get('PORT', config.PORT))
+    host = os.environ.get('HOST', config.HOST)
+    
     print("\n" + "=" * 70)
     print("🚀 AgriScan API Server Starting...")
     print("=" * 70)
     print(f"📊 Model loaded: {model_service.model is not None}")
     print(f"🗄️  Database: {config.DATABASE_PATH}")
-    print(f"🌐 Server: http://{config.HOST}:{config.PORT}")
+    print(f"🌐 Server: http://{host}:{port}")
+    print(f"🔧 Environment: {'Production' if not config.DEBUG else 'Development'}")
     print("=" * 70 + "\n")
     
     # Disable auto-reload to prevent crashes during detection
     app.run(
-        host=config.HOST,
-        port=config.PORT,
-        debug=False,  # Changed from config.DEBUG to False
+        host=host,
+        port=port,
+        debug=False,  # Always False in production
         use_reloader=False  # Disable watchdog file monitoring
     )

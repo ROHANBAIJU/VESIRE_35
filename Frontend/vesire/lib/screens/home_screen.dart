@@ -5,9 +5,13 @@ import 'profile_screen.dart';
 import 'history_screen.dart';
 import 'analytics_screen.dart';
 import 'notifications_screen.dart';
+import 'community_screen.dart';
+import 'guide_screen.dart';
+import 'garden_screen.dart';
 import '../services/connectivity_service.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/language_provider.dart';
+import '../utils/page_transitions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const HomeDashboard(),
-    const Center(child: Text('Search', style: TextStyle(fontSize: 24))),
+    const NotificationsScreen(),
     const ScanScreen(),
     const AnalyticsScreen(),
     const HistoryScreen(),
@@ -47,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onItemTapped(int index) {
     if (index == 2) {
+<<<<<<< Updated upstream
       // Navigate to full screen scanner
       Navigator.push(
         context,
@@ -59,6 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }
       });
+=======
+      // Navigate to full screen scanner with fade animation
+      context.fadeToPage(const ScanScreen());
+>>>>>>> Stashed changes
     } else {
       setState(() {
         _selectedIndex = index;
@@ -90,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(Icons.home_rounded, loc.translate('home'), 0),
-                _buildNavItem(Icons.search_rounded, loc.translate('search'), 1),
+                _buildNavItem(Icons.notifications_rounded, loc.translate('notifications'), 1),
                 _buildScanButton(),
                 _buildNavItem(Icons.bar_chart_rounded, loc.translate('analytics'), 3),
                 _buildNavItem(Icons.history_rounded, loc.translate('history'), 4),
@@ -624,52 +633,6 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const NotificationsScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Stack(
-                              children: [
-                                const Icon(
-                                  Icons.notifications_outlined,
-                                  color: Color(0xFF4CAF50),
-                                  size: 24,
-                                ),
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: Container(
-                                    width: 8,
-                                    height: 8,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        GestureDetector(
                           onTap: _showLanguageMenu,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -820,29 +783,22 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       _buildHeaderQuickAction(
                         Icons.qr_code_scanner_rounded,
                         loc.translate('scan'),
-                        () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ScanScreen(),
-                            ),
-                          );
-                        },
+                        () => context.fadeToPage(const ScanScreen()),
                       ),
                       _buildHeaderQuickAction(
                         Icons.yard_rounded,
                         loc.translate('garden'),
-                        () {},
+                        () => context.fadeToPage(const GardenScreen()),
                       ),
                       _buildHeaderQuickAction(
                         Icons.book_rounded,
                         loc.translate('guide'),
-                        () {},
+                        () => context.fadeToPage(const GuideScreen()),
                       ),
                       _buildHeaderQuickAction(
                         Icons.people_rounded,
                         loc.translate('community'),
-                        () {},
+                        () => context.fadeToPage(const CommunityScreen()),
                       ),
                     ],
                   ),

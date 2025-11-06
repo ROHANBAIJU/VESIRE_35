@@ -67,6 +67,35 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4CAF50)),
             useMaterial3: true,
             fontFamily: 'Roboto',
+            // Smooth page transitions
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              },
+            ),
+            // Smooth and visible animations
+            splashFactory: InkRipple.splashFactory,
+            splashColor: Colors.green.withOpacity(0.3),
+            highlightColor: Colors.green.withOpacity(0.1),
+            // Animate card interactions
+            cardTheme: CardThemeData(
+              elevation: 2,
+              shadowColor: Colors.green.withOpacity(0.2),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                elevation: 3,
+                shadowColor: Colors.green.withOpacity(0.4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              ),
+            ),
           ),
           home: const SplashScreen(),
           routes: {

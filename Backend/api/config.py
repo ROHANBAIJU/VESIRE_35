@@ -15,7 +15,7 @@ class Config:
     
     # Server
     HOST = os.getenv('HOST', '0.0.0.0')
-    PORT = int(os.getenv('PORT', 5000))
+    PORT = int(os.getenv('PORT', 5001))  # Changed from 5000 to 5001 to avoid macOS AirPlay conflict
     DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
     
     # Paths

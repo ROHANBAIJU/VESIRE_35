@@ -55,9 +55,9 @@ We're excited to innovate, collaborate, and build something that creates real-wo
 | Role                | Member     | GitHub                                       |
 | :------------------ | :--------- | :------------------------------------------- |
 | 🎯 **Team Lead**    | **Ananya** | [@ananya](https://github.com)                |
-| 💻 **Developer**    | **Sruthi** | [@sruthi](https://github.com)                |
-| 🎨 **UI/UX Designer** | **Joel**   | [@joel](https://github.com)                  |
-| 🤖 **AI Engineer**    | **Srijan** | [@srijan](https://github.com)                |
+| 💻 **Developer**    | **Joel** | [@sruthi](https://github.com)                |
+| 🎨 **UI/UX Designer** | **Sruthi**   | [@joel](https://github.com)                  |
+| 🤖 **Frontend Dev**    | **Srijan** | [@srijan](https://github.com)                |
 | ⚙️ **Backend Dev**  | **Rohan**  | [@ROHANBAIJU](https://github.com/ROHANBAIJU) |
 
 *A team driven by innovation, collaboration, and the vision to revolutionize agriculture with AI.*

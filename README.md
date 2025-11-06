@@ -113,7 +113,7 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 
 | 📷 Point Camera | 🤖 AI Detection | 🎯 AR Overlay | 💊 Get Treatment |3. **On-Device Processing:** The model outputs bounding boxes (e.g., `[Tomato_Blight, x:50, y:100, w:200, h:150]`).  
 
-|:---------------:|:---------------:|:-------------:|:----------------:|4. **AR Overlay:** Flutter’s `Stack` widget draws boxes/labels over the camera view for a pragmatic AR effect.  
+4. **AR Overlay:** Flutter’s `Stack` widget draws boxes/labels over the camera view for a pragmatic AR effect.  
 
 | Aim at affected leaf | YOLOv8 identifies disease | Bounding boxes highlight symptoms | Instant diagnosis + AI recommendations |5. **Offline Data:** When tapped, the app queries a local **`sqflite`** DB to fetch stored treatment tips.
 

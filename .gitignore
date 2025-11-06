@@ -483,7 +483,8 @@ Backend/results/
 !**/*.md
 !PROJECT_ROADMAP.md
 yolo_dataset
-
+DATASET
+unified_dataset
 # Dataset metadata - KEEP THESE
 !Backend/DATASET/README.md
 !Backend/yolo_dataset/data.yaml

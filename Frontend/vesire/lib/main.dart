@@ -5,6 +5,7 @@ import 'screens/splash_screen.dart';
 import 'services/notification_service.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/language_provider.dart';
+import 'providers/analytics_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,8 +14,11 @@ void main() async {
   await NotificationService().initialize();
   
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LanguageProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
+      ],
       child: const MyApp(),
     ),
   );

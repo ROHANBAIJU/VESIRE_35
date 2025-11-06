@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/analytics_provider.dart';
+import '../widgets/markdown_text.dart';
+import 'package:intl/intl.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -10,113 +14,144 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
-  // Last scanned plant data
-  final Map<String, dynamic> _lastScannedPlant = {
-    'name': 'Monstera Deliciosa',
-    'scientificName': 'Monstera deliciosa',
-    'image': 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=400',
-    'scanDate': 'Today, 2:30 PM',
-    'health': 87,
-    'unhealthy': 13,
-    'diseaseRisk': 18,
-    'aiConfidence': 94,
-    'rarity': 'Common',
-    'aiSummary': 'Your Monstera Deliciosa is showing excellent health with strong leaf development and proper coloration. Minor signs of underwatering detected on lower leaves. Recommend increasing watering frequency by 20%.',
-    'environmentalData': {
-      'lightExposure': 85,
-      'humidity': 65,
-      'temperature': 72,
-      'soilMoisture': 58,
-    },
-    'careRecommendations': [
-      'Increase watering frequency',
-      'Maintain current light levels',
-      'Check for pests weekly',
-      'Fertilize in 2 weeks',
-    ],
-  };
+  @override
+  void initState() {
+    super.initState();
+    // Load analytics data when screen is created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AnalyticsProvider>(context, listen: false).loadAnalytics();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final analyticsProvider = Provider.of<AnalyticsProvider>(context);
     
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      loc.translate('analytics'),
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1A1A1A),
+        child: analyticsProvider.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : analyticsProvider.currentAnalytics == null
+                ? _buildEmptyState()
+                : RefreshIndicator(
+                    onRefresh: () => analyticsProvider.refresh(),
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Header
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  loc.translate('analytics'),
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1A1A1A),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.grey.shade200),
+                                  ),
+                                  child: Icon(
+                                    Icons.more_horiz,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Last Scanned Plant Analysis',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Plant Info Card
+                            _buildPlantInfoCard(analyticsProvider.currentAnalytics!),
+                            const SizedBox(height: 16),
+
+                            // AI Confidence Score Card (Separate)
+                            _buildAIConfidenceCard(analyticsProvider.currentAnalytics!),
+                            const SizedBox(height: 16),
+
+                            // AI Summary Section
+                            _buildAISummarySection(analyticsProvider.currentAnalytics!),
+                            const SizedBox(height: 16),
+
+                            // Health Pie Chart
+                            _buildHealthPieChart(analyticsProvider.currentAnalytics!),
+                            const SizedBox(height: 16),
+
+                            // Environmental Data
+                            _buildEnvironmentalMetrics(analyticsProvider.currentAnalytics!),
+                            const SizedBox(height: 16),
+
+                            // Care Recommendations
+                            _buildCareRecommendations(analyticsProvider.currentAnalytics!),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Icon(
-                        Icons.more_horiz,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Last Scanned Plant Analysis',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
                   ),
-                ),
-                const SizedBox(height: 24),
+      ),
+    );
+  }
 
-                // Plant Info Card
-                _buildPlantInfoCard(),
-                const SizedBox(height: 16),
-
-                // AI Confidence Score Card (Separate)
-                _buildAIConfidenceCard(),
-                const SizedBox(height: 16),
-
-                // AI Summary Section
-                _buildAISummarySection(),
-                const SizedBox(height: 16),
-
-                // Health Pie Chart
-                _buildHealthPieChart(),
-                const SizedBox(height: 16),
-
-                // Environmental Data
-                _buildEnvironmentalMetrics(),
-                const SizedBox(height: 16),
-
-                // Care Recommendations
-                _buildCareRecommendations(),
-                const SizedBox(height: 20),
-              ],
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.analytics_outlined,
+              size: 100,
+              color: Colors.grey.shade300,
             ),
-          ),
+            const SizedBox(height: 24),
+            Text(
+              'No Analytics Data Yet',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Scan your first plant to see detailed analytics here',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildPlantInfoCard() {
+  Widget _buildPlantInfoCard(AnalyticsData data) {
+    final dateFormat = DateFormat('MMM d, h:mm a');
+    final scanDateStr = dateFormat.format(data.scanDate);
+    
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -133,21 +168,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         padding: const EdgeInsets.all(20.0),
         child: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                _lastScannedPlant['image'],
-                width: 90,
-                height: 90,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 90,
-                    height: 90,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.image, size: 40),
-                  );
-                },
+            Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                color: Colors.green.shade100,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                Icons.local_florist,
+                size: 50,
+                color: Colors.green.shade700,
               ),
             ),
             const SizedBox(width: 16),
@@ -156,7 +187,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _lastScannedPlant['name'],
+                    data.plantName,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -165,7 +196,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _lastScannedPlant['scientificName'],
+                    data.scientificName,
                     style: TextStyle(
                       fontSize: 13,
                       fontStyle: FontStyle.italic,
@@ -186,7 +217,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           border: Border.all(color: Colors.green.shade200),
                         ),
                         child: Text(
-                          _lastScannedPlant['rarity'],
+                          data.rarity,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -201,11 +232,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         color: Colors.grey.shade500,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        _lastScannedPlant['scanDate'],
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade600,
+                      Expanded(
+                        child: Text(
+                          scanDateStr,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -219,7 +253,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildAIConfidenceCard() {
+  Widget _buildAIConfidenceCard(AnalyticsData data) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -274,7 +308,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${_lastScannedPlant['aiConfidence']}%',
+                        '${data.aiConfidence.toStringAsFixed(1)}%',
                         style: const TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.bold,
@@ -297,7 +331,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(3),
                     child: LinearProgressIndicator(
-                      value: _lastScannedPlant['aiConfidence'] / 100,
+                      value: data.aiConfidence / 100,
                       backgroundColor: Colors.white.withOpacity(0.3),
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         Colors.white,
@@ -314,7 +348,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildAISummarySection() {
+  Widget _buildAISummarySection(AnalyticsData data) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -358,9 +392,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            Text(
-              _lastScannedPlant['aiSummary'],
-              style: TextStyle(
+            MarkdownText(
+              text: data.aiSummary,
+              baseStyle: TextStyle(
                 fontSize: 14,
                 height: 1.7,
                 color: Colors.grey.shade700,
@@ -373,7 +407,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildHealthPieChart() {
+  Widget _buildHealthPieChart(AnalyticsData data) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -412,8 +446,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         centerSpaceRadius: 55,
                         sections: [
                           PieChartSectionData(
-                            value: _lastScannedPlant['health'].toDouble(),
-                            title: '${_lastScannedPlant['health']}%',
+                            value: data.healthPercentage.toDouble(),
+                            title: '${data.healthPercentage}%',
                             color: const Color(0xFF4CAF50),
                             radius: 55,
                             titleStyle: const TextStyle(
@@ -423,8 +457,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             ),
                           ),
                           PieChartSectionData(
-                            value: _lastScannedPlant['unhealthy'].toDouble(),
-                            title: '${_lastScannedPlant['unhealthy']}%',
+                            value: data.unhealthyPercentage.toDouble(),
+                            title: '${data.unhealthyPercentage}%',
                             color: Colors.red.shade400,
                             radius: 55,
                             titleStyle: const TextStyle(
@@ -446,22 +480,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         _buildLegendItem(
                           'Healthy',
                           const Color(0xFF4CAF50),
-                          _lastScannedPlant['health'],
+                          data.healthPercentage,
                         ),
                         const SizedBox(height: 16),
                         _buildLegendItem(
                           'Unhealthy',
                           Colors.red.shade400,
-                          _lastScannedPlant['unhealthy'],
+                          data.unhealthyPercentage,
                         ),
                         const SizedBox(height: 20),
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: _getDiseaseRiskColor().withOpacity(0.1),
+                            color: _getDiseaseRiskColor(data.diseaseRisk).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: _getDiseaseRiskColor(),
+                              color: _getDiseaseRiskColor(data.diseaseRisk),
                               width: 2,
                             ),
                           ),
@@ -478,11 +512,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${_lastScannedPlant['diseaseRisk']}%',
+                                '${data.diseaseRisk}%',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: _getDiseaseRiskColor(),
+                                  color: _getDiseaseRiskColor(data.diseaseRisk),
                                 ),
                               ),
                             ],
@@ -536,15 +570,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Color _getDiseaseRiskColor() {
-    final risk = _lastScannedPlant['diseaseRisk'];
+  Color _getDiseaseRiskColor(int risk) {
     if (risk < 20) return const Color(0xFF4CAF50);
     if (risk < 50) return Colors.orange;
     return Colors.red;
   }
 
-  Widget _buildEnvironmentalMetrics() {
-    final envData = _lastScannedPlant['environmentalData'];
+  Widget _buildEnvironmentalMetrics(AnalyticsData data) {
+    final envData = data.environmentalData;
     
     return Container(
       decoration: BoxDecoration(
@@ -573,49 +606,49 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             ),
             const SizedBox(height: 20),
             Row(
-              children: [
-                Expanded(
-                  child: _buildMetricCard(
-                    'Light',
-                    envData['lightExposure'],
-                    Icons.wb_sunny,
-                    const Color(0xFFFFA726),
+                children: [
+                  Expanded(
+                    child: _buildMetricCard(
+                      'Light',
+                      envData['lightExposure'] ?? 70,
+                      Icons.wb_sunny,
+                      const Color(0xFFFFA726),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildMetricCard(
-                    'Humidity',
-                    envData['humidity'],
-                    Icons.water_drop,
-                    const Color(0xFF42A5F5),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildMetricCard(
+                      'Humidity',
+                      envData['humidity'] ?? 60,
+                      Icons.water_drop,
+                      const Color(0xFF42A5F5),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildMetricCard(
-                    'Temperature',
-                    envData['temperature'],
-                    Icons.thermostat,
-                    const Color(0xFFEF5350),
-                    suffix: '°F',
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildMetricCard(
+                      'Temperature',
+                      envData['temperature'] ?? 72,
+                      Icons.thermostat,
+                      const Color(0xFFEF5350),
+                      suffix: '°F',
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildMetricCard(
-                    'Soil',
-                    envData['soilMoisture'],
-                    Icons.grass,
-                    const Color(0xFF8D6E63),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildMetricCard(
+                      'Soil',
+                      envData['soilMoisture'] ?? 55,
+                      Icons.grass,
+                      const Color(0xFF8D6E63),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),
@@ -662,7 +695,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildCareRecommendations() {
+  Widget _buildCareRecommendations(AnalyticsData data) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -707,7 +740,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             ),
             const SizedBox(height: 16),
             ...List.generate(
-              _lastScannedPlant['careRecommendations'].length,
+              data.careRecommendations.length,
               (index) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
@@ -728,9 +761,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        _lastScannedPlant['careRecommendations'][index],
-                        style: TextStyle(
+                      child: MarkdownText(
+                        text: data.careRecommendations[index],
+                        baseStyle: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade700,
                           height: 1.5,

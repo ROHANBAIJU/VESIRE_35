@@ -85,9 +85,13 @@ def detect_disease():
     }
     """
     try:
+        print('🟢 [FLASK] ========== NEW DETECTION REQUEST ==========')
+        print(f'🟢 [FLASK] Request from: {request.remote_addr}')
+        
         data = request.get_json()
         
         if not data or 'image' not in data:
+            print('🟢 [FLASK] ❌ ERROR: No image data provided')
             return jsonify({
                 'success': False,
                 'error': 'No image data provided'
@@ -99,14 +103,23 @@ def detect_disease():
         save_history = data.get('save_history', False)
         user_id = data.get('user_id')
         
+        print(f'🟢 [FLASK] Parameters: confidence={confidence_threshold}, save={save_history}, user={user_id}')
+        print(f'🟢 [FLASK] Image data size: {len(image_data)} characters')
+        
         # Run detection
+        print('🟢 [FLASK] Running TFLite model detection...')
         result = model_service.detect(
             image_data=image_data,
             confidence_threshold=confidence_threshold
         )
         
         if not result['success']:
+            print(f'🟢 [FLASK] ❌ Detection failed: {result.get("error")}')
             return jsonify(result), 500
+        
+        print(f'🟢 [FLASK] ✅ Detection complete: {len(result["detections"])} detections found')
+        for i, det in enumerate(result['detections']):
+            print(f'🟢 [FLASK]    [{i+1}] {det["class_name"]}: {det["confidence"]:.2%}')
         
         # Generate detection ID
         detection_id = str(uuid.uuid4())
@@ -115,17 +128,23 @@ def detect_disease():
         # Save to history if requested
         if save_history and user_id:
             try:
+                print(f'🟢 [FLASK] Saving to history for user {user_id}...')
                 db_service.save_detection(
                     user_id=user_id,
                     detections=result['detections'],
                     image_base64=image_data,  # Store for offline access
                 )
+                print('🟢 [FLASK] ✅ Saved to history')
             except Exception as e:
-                print(f"Warning: Failed to save detection: {e}")
+                print(f"🟢 [FLASK] ⚠️ Warning: Failed to save detection: {e}")
         
+        print(f'🟢 [FLASK] Sending response with detection_id: {detection_id}')
+        print('🟢 [FLASK] ================================================')
         return jsonify(result)
         
     except Exception as e:
+        print(f'🟢 [FLASK] ❌ EXCEPTION: {str(e)}')
+        print('🟢 [FLASK] ================================================')
         return jsonify({
             'success': False,
             'error': str(e)
@@ -439,8 +458,10 @@ if __name__ == '__main__':
     print(f"🌐 Server: http://{config.HOST}:{config.PORT}")
     print("=" * 70 + "\n")
     
+    # Disable auto-reload to prevent crashes during detection
     app.run(
         host=config.HOST,
         port=config.PORT,
-        debug=config.DEBUG
+        debug=False,  # Changed from config.DEBUG to False
+        use_reloader=False  # Disable watchdog file monitoring
     )

@@ -170,23 +170,30 @@ class RAGService:
                 
                 prompt = f"""You are a plant pathology expert. Provide detailed information about the plant disease: {disease_name}
 
+IMPORTANT: You MUST respond in {language.upper()} language for the description, symptoms, treatment, prevention, and care_recommendations.
+
 Please respond in JSON format with the following structure:
 {{
     "name": "{disease_name}",
     "scientific_name": "scientific name",
-    "description": "detailed description",
-    "symptoms": ["symptom 1", "symptom 2", ...],
+    "description": "detailed description in {language} - use bold markdown **for key terms** like disease names, affected parts",
+    "symptoms": ["symptom 1 in {language}", "symptom 2 in {language}", ...],
     "treatment": {{
-        "organic": ["organic method 1", "organic method 2", ...],
-        "chemical": ["chemical method 1", "chemical method 2", ...],
-        "cultural": ["cultural practice 1", "cultural practice 2", ...]
+        "organic": ["organic method 1 in {language}", "organic method 2 in {language}", ...],
+        "chemical": ["chemical method 1 in {language}", "chemical method 2 in {language}", ...],
+        "cultural": ["cultural practice 1 in {language}", "cultural practice 2 in {language}", ...]
     }},
-    "prevention": ["prevention 1", "prevention 2", ...],
+    "prevention": ["prevention 1 in {language}", "prevention 2 in {language}", ...],
+    "care_recommendations": ["EXACTLY 4 care recommendations in {language} - use **bold** for key action words", "recommendation 2", "recommendation 3", "recommendation 4"],
     "severity": "low|medium|high",
     "affected_plants": ["plant 1", "plant 2", ...]
 }}
 
-Provide accurate, actionable information for farmers."""
+CRITICAL REQUIREMENTS:
+1. ALL text content MUST be in {language.upper()} language (except field names and "name"/"scientific_name" which stay in English/Latin)
+2. Use **markdown bold** for important keywords like disease names, plant parts, key actions
+3. care_recommendations MUST contain EXACTLY 4 points
+4. Provide accurate, actionable information for farmers in their local language"""
 
                 response = model.generate_content(prompt)
                 diagnosis_text = response.text
@@ -211,32 +218,39 @@ Provide accurate, actionable information for farmers."""
             
             prompt = f"""You are a plant pathology expert. Provide detailed information about the plant disease: {disease_name}
 
+IMPORTANT: You MUST respond in {language.upper()} language for the description, symptoms, treatment, prevention, and care_recommendations.
+
 Please respond in JSON format with the following structure:
 {{
     "name": "{disease_name}",
     "scientific_name": "scientific name",
-    "description": "detailed description",
-    "symptoms": ["symptom 1", "symptom 2", ...],
+    "description": "detailed description in {language} - use bold markdown **for key terms** like disease names, affected parts",
+    "symptoms": ["symptom 1 in {language}", "symptom 2 in {language}", ...],
     "treatment": {{
-        "organic": ["organic method 1", "organic method 2", ...],
-        "chemical": ["chemical method 1", "chemical method 2", ...],
-        "cultural": ["cultural practice 1", "cultural practice 2", ...]
+        "organic": ["organic method 1 in {language}", "organic method 2 in {language}", ...],
+        "chemical": ["chemical method 1 in {language}", "chemical method 2 in {language}", ...],
+        "cultural": ["cultural practice 1 in {language}", "cultural practice 2 in {language}", ...]
     }},
-    "prevention": ["prevention 1", "prevention 2", ...],
+    "prevention": ["prevention 1 in {language}", "prevention 2 in {language}", ...],
+    "care_recommendations": ["EXACTLY 4 care recommendations in {language} - use **bold** for key action words", "recommendation 2", "recommendation 3", "recommendation 4"],
     "severity": "low|medium|high",
     "affected_plants": ["plant 1", "plant 2", ...]
 }}
 
-Provide accurate, actionable information for farmers."""
+CRITICAL REQUIREMENTS:
+1. ALL text content MUST be in {language.upper()} language (except field names and "name"/"scientific_name" which stay in English/Latin)
+2. Use **markdown bold** for important keywords like disease names, plant parts, key actions
+3. care_recommendations MUST contain EXACTLY 4 points
+4. Provide accurate, actionable information for farmers in their local language"""
 
             response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "You are a plant pathology expert providing disease information in JSON format."},
+                    {"role": "system", "content": f"You are a plant pathology expert providing disease information in JSON format. Always respond in {language} language."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
-                max_tokens=1000
+                max_tokens=1500
             )
             
             diagnosis_text = response.choices[0].message.content

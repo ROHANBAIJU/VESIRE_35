@@ -123,7 +123,7 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 
 1. **User Action:** User taps “Get Advanced AI Tips.”  
 
----2. **Cloud Function:** Calls a **Firebase Cloud Function** written in Python.  
+2. **Cloud Function:** Calls a **Firebase Cloud Function** written in Python.  
 
 3. **GenAI RAG:** Uses **Gemini API** with RAG to produce a detailed context-aware answer.  
 

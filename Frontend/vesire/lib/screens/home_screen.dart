@@ -5,6 +5,9 @@ import 'profile_screen.dart';
 import 'history_screen.dart';
 import 'analytics_screen.dart';
 import 'notifications_screen.dart';
+import 'garden_screen.dart';
+import 'guide_screen.dart';
+import 'community_screen.dart';
 import '../services/connectivity_service.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/language_provider.dart';
@@ -782,32 +785,26 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       _buildHeaderQuickAction(
                         Icons.yard_rounded,
                         loc.translate('garden'),
-                        () {
-                          // Garden screen not implemented yet
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Garden feature coming soon!')),
-                          );
-                        },
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const GardenScreen()),
+                        ),
                       ),
                       _buildHeaderQuickAction(
                         Icons.book_rounded,
                         loc.translate('guide'),
-                        () {
-                          // Guide screen not implemented yet
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Guide feature coming soon!')),
-                          );
-                        },
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const GuideScreen()),
+                        ),
                       ),
                       _buildHeaderQuickAction(
                         Icons.people_rounded,
                         loc.translate('community'),
-                        () {
-                          // Community screen not implemented yet
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Community feature coming soon!')),
-                          );
-                        },
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CommunityScreen()),
+                        ),
                       ),
                     ],
                   ),

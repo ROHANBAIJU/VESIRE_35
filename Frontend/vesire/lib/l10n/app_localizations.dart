@@ -37,9 +37,28 @@ class AppLocalizations {
       // Quick Actions
       'quickActions': 'Quick Actions',
       'scanPlant': 'Scan',
-      'myGarden': 'Garden',
-      'plantGuide': 'Guide',
+      'garden': 'Garden',
+      'myGarden': 'My Garden',
+      'guide': 'Guide',
+      'plantGuide': 'Plant Guide',
+      'plantGuides': 'Plant Guides',
       'community': 'Community',
+      
+      // Garden Screen
+      'allPlants': 'All Plants',
+      'needsCare': 'Needs Care',
+      'addPlant': 'Add Plant',
+      
+      // Guide Screen
+      'mostCommonDisease': 'Most common disease',
+      
+      // Tips
+      'tipWateringTitle': 'Watering Tips',
+      'tipWateringDesc': 'Water early morning or late evening for best absorption',
+      'tipSunlightTitle': 'Sunlight Requirements',
+      'tipSunlightDesc': 'Most plants need 6-8 hours of sunlight daily',
+      'tipSoilTitle': 'Soil Health',
+      'tipSoilDesc': 'Check soil moisture before watering to prevent overwatering',
       
       // Recent Activity
       'recentActivity': 'Recent Activity',
@@ -121,9 +140,28 @@ class AppLocalizations {
       // Quick Actions
       'quickActions': 'त्वरित कार्य',
       'scanPlant': 'स्कैन',
-      'myGarden': 'बगीचा',
-      'plantGuide': 'गाइड',
+      'garden': 'बगीचा',
+      'myGarden': 'मेरा बगीचा',
+      'guide': 'गाइड',
+      'plantGuide': 'पौधों की गाइड',
+      'plantGuides': 'पौधों की गाइड',
       'community': 'समुदाय',
+      
+      // Garden Screen
+      'allPlants': 'सभी पौधे',
+      'needsCare': 'देखभाल की जरूरत',
+      'addPlant': 'पौधा जोड़ें',
+      
+      // Guide Screen
+      'mostCommonDisease': 'सबसे आम बीमारी',
+      
+      // Tips
+      'tipWateringTitle': 'पानी देने के टिप्स',
+      'tipWateringDesc': 'बेहतर अवशोषण के लिए सुबह जल्दी या शाम को पानी दें',
+      'tipSunlightTitle': 'धूप की आवश्यकता',
+      'tipSunlightDesc': 'अधिकांश पौधों को रोजाना 6-8 घंटे धूप की आवश्यकता होती है',
+      'tipSoilTitle': 'मिट्टी का स्वास्थ्य',
+      'tipSoilDesc': 'अधिक पानी से बचने के लिए पानी देने से पहले मिट्टी की नमी जांचें',
       
       // Recent Activity
       'recentActivity': 'हाल की गतिविधि',
@@ -205,9 +243,28 @@ class AppLocalizations {
       // Quick Actions
       'quickActions': 'ತ್ವರಿತ ಕ್ರಿಯೆಗಳು',
       'scanPlant': 'ಸ್ಕ್ಯಾನ್',
-      'myGarden': 'ತೋಟ',
-      'plantGuide': 'ಮಾರ್ಗದರ್ಶಿ',
+      'garden': 'ತೋಟ',
+      'myGarden': 'ನನ್ನ ತೋಟ',
+      'guide': 'ಮಾರ್ಗದರ್ಶಿ',
+      'plantGuide': 'ಸಸ್ಯ ಮಾರ್ಗದರ್ಶಿ',
+      'plantGuides': 'ಸಸ್ಯ ಮಾರ್ಗದರ್ಶಿಗಳು',
       'community': 'ಸಮುದಾಯ',
+      
+      // Garden Screen
+      'allPlants': 'ಎಲ್ಲಾ ಸಸ್ಯಗಳು',
+      'needsCare': 'ಆರೈಕೆ ಬೇಕು',
+      'addPlant': 'ಸಸ್ಯ ಸೇರಿಸಿ',
+      
+      // Guide Screen
+      'mostCommonDisease': 'ಅತ್ಯಂತ ಸಾಮಾನ್ಯ ರೋಗ',
+      
+      // Tips
+      'tipWateringTitle': 'ನೀರುಣಿಸುವ ಸಲಹೆಗಳು',
+      'tipWateringDesc': 'ಉತ್ತಮ ಹೀರಿಕೊಳ್ಳುವಿಕೆಗಾಗಿ ಮುಂಜಾನೆ ಅಥವಾ ಸಂಜೆ ನೀರು ಹಾಕಿ',
+      'tipSunlightTitle': 'ಸೂರ್ಯನ ಬೆಳಕಿನ ಅವಶ್ಯಕತೆಗಳು',
+      'tipSunlightDesc': 'ಹೆಚ್ಚಿನ ಸಸ್ಯಗಳಿಗೆ ದಿನಕ್ಕೆ 6-8 ಗಂಟೆ ಸೂರ್ಯನ ಬೆಳಕು ಬೇಕಾಗುತ್ತದೆ',
+      'tipSoilTitle': 'ಮಣ್ಣಿನ ಆರೋಗ್ಯ',
+      'tipSoilDesc': 'ಅತಿಯಾದ ನೀರು ತಪ್ಪಿಸಲು ನೀರು ಹಾಕುವ ಮೊದಲು ಮಣ್ಣಿನ ತೇವಾಂಶ ಪರಿಶೀಲಿಸಿ',
       
       // Recent Activity
       'recentActivity': 'ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ',

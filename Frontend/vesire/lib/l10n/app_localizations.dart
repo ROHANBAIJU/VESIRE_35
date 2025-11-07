@@ -183,7 +183,7 @@ class AppLocalizations {
       'selectLanguage': 'भाषा चुनें',
       'english': 'अंग्रेज़ी',
       'hindi': 'हिंदी',
-      'kannada': 'ಕನ್ನಡ',
+      'kannada': 'ಕನ್ನಡ', // Note: Hindi UI shows 'ಕನ್ನಡ' for Kannada
       
       // Login Screen
       'loginTitle': 'वापसी पर स्वागत है',
@@ -284,7 +284,7 @@ class AppLocalizations {
       // Language
       'selectLanguage': 'ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ',
       'english': 'ಇಂಗ್ಲಿಷ್',
-      'hindi': 'हिंदी',
+      'hindi': 'हिंदी', // Note: Kannada UI shows 'हिंदी' for Hindi
       'kannada': 'ಕನ್ನಡ',
       
       // Login Screen

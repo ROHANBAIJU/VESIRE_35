@@ -8,12 +8,11 @@ services:
     region: oregon
     plan: free
     branch: main
-    rootDir: Backend/api
+    rootDir: Backend
     buildCommand: |
-      cd ..
       python -m pip install --upgrade pip setuptools wheel
       pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --worker-class sync app:app
+    startCommand: cd api && gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --worker-class sync app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.6

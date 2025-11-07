@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:flutter/material.dart';
 import '../utils/snackbar_utils.dart';
 
@@ -9,7 +10,15 @@ class ConnectivityService {
   ConnectivityService._internal();
 
   final Connectivity _connectivity = Connectivity();
+  final InternetConnection _internetConnection = InternetConnection();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  StreamSubscription<InternetStatus>? _internetStatusSubscription;
+  
+  // Stream controller for connectivity changes
+  final StreamController<bool> _connectivityController =
+      StreamController<bool>.broadcast();
+  
+  Stream<bool> get connectivityStream => _connectivityController.stream;
   
   bool _isOnline = true;
   bool get isOnline => _isOnline;
@@ -21,16 +30,33 @@ class ConnectivityService {
   }
 
   /// Check current connectivity status
+  /// Uses both device connectivity and actual internet check
   Future<bool> checkConnectivity() async {
     try {
+      print('🌐 [CONNECTIVITY] Checking connection...');
+      
+      // First check device connectivity
       final List<ConnectivityResult> connectivityResults = 
           await _connectivity.checkConnectivity();
       
-      _isOnline = !connectivityResults.contains(ConnectivityResult.none);
+      if (connectivityResults.contains(ConnectivityResult.none)) {
+        print('🌐 [CONNECTIVITY] No network connection');
+        _isOnline = false;
+        _connectivityController.add(false);
+        return false;
+      }
+      
+      // Device has network, verify actual internet access
+      final hasInternet = await _internetConnection.hasInternetAccess;
+      _isOnline = hasInternet;
+      _connectivityController.add(hasInternet);
+      print('🌐 [CONNECTIVITY] Network: ${connectivityResults.first.name}, Internet: $hasInternet');
+      
       return _isOnline;
     } catch (e) {
-      print('Error checking connectivity: $e');
+      print('🌐 [CONNECTIVITY] ❌ Error checking connectivity: $e');
       _isOnline = false;
+      _connectivityController.add(false);
       return false;
     }
   }
@@ -106,10 +132,28 @@ class ConnectivityService {
 
   /// Start listening to connectivity changes
   void startMonitoring(BuildContext context) {
+    // Listen to device connectivity changes
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
-      (List<ConnectivityResult> results) {
+      (List<ConnectivityResult> results) async {
+        if (results.contains(ConnectivityResult.none)) {
+          _isOnline = false;
+          _connectivityController.add(false);
+          print('🌐 [CONNECTIVITY] Network lost');
+        } else {
+          // Verify internet access when network appears
+          await checkConnectivity();
+        }
+      },
+    );
+    
+    // Listen to internet connection status changes
+    _internetStatusSubscription = _internetConnection.onStatusChange.listen(
+      (status) {
         final wasOnline = _isOnline;
-        _isOnline = !results.contains(ConnectivityResult.none);
+        _isOnline = status == InternetStatus.connected;
+        _connectivityController.add(_isOnline);
+        
+        print('🌐 [CONNECTIVITY] Status: ${_isOnline ? "ONLINE" : "OFFLINE"}');
 
         // Only show notification if status changed
         if (wasOnline != _isOnline) {
@@ -135,8 +179,10 @@ class ConnectivityService {
     _connectivitySubscription = null;
   }
 
-  /// Dispose resources
+  /// Clean up resources
   void dispose() {
-    stopMonitoring();
+    _connectivitySubscription?.cancel();
+    _internetStatusSubscription?.cancel();
+    _connectivityController.close();
   }
 }

@@ -11,6 +11,10 @@ import base64
 import io
 from datetime import datetime
 from pathlib import Path
+import sys
+
+# Add api directory to Python path for imports
+sys.path.insert(0, str(Path(__file__).parent))
 
 # Import services
 from services.model_service import model_service

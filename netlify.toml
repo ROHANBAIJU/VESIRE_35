@@ -1,11 +1,10 @@
 # Netlify Configuration for AgriScan Frontend
+# NOTE: Build Flutter web locally and commit build/web folder
+# Netlify will serve the pre-built files (no Flutter installation needed)
 [build]
   base = "Frontend/vesire"
   publish = "build/web"
-  command = "flutter build web --release --web-renderer canvaskit"
-
-[build.environment]
-  FLUTTER_VERSION = "3.24.0"
+  command = "echo 'Using pre-built Flutter web files'"
 
 [[redirects]]
   from = "/*"

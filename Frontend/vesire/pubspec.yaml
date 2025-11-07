@@ -63,6 +63,7 @@ dependencies:
   flutter_tts: ^3.6.6
   
   # ON-DEVICE AI - ONNX Runtime for YOLOv8
+  # Works on Android/iOS for offline detection
   onnxruntime: ^1.4.1
   ffi: ^2.1.0
 
@@ -76,6 +77,15 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+# App Icon Configuration
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icons/app_icon.jpg"
+  adaptive_icon_background: "#4CAF50"
+  adaptive_icon_foreground: "assets/icons/app_icon.jpg"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

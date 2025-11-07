@@ -47,44 +47,47 @@ class RAGService:
         Returns:
             dict: Diagnosis information
         """
-        # For non-English languages, ALWAYS use online LLM (knowledge base is English-only)
-        # This ensures multilingual responses
-        if language.lower() != 'en':
-            print(f"🌐 [RAG] Non-English language requested ({language}), skipping English-only sources")
-            
-            # Try online RAG for multilingual support (check both Gemini and OpenAI keys)
-            if self.use_online and (config.GEMINI_API_KEY or config.OPENAI_API_KEY):
-                try:
-                    print(f"🔄 [RAG] Calling online LLM for {language} translation...")
-                    diagnosis = self.get_online_diagnosis(disease_name, language)
+        # PRIORITY 1: Try online RAG FIRST for rich AI-generated content (with 10s timeout)
+        if self.use_online and (config.GEMINI_API_KEY or config.OPENAI_API_KEY):
+            try:
+                print(f"🌐 [RAG] Trying Gemini/OpenAI first for rich AI diagnosis (10s timeout)...")
+                import concurrent.futures
+                
+                # Use ThreadPoolExecutor with 10 second timeout
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(self.get_online_diagnosis, disease_name, language)
+                    try:
+                        diagnosis = future.result(timeout=10.0)  # 10 second timeout
+                        
+                        # Cache for offline use
+                        db_service.cache_disease(
+                            name=disease_name,
+                            scientific_name=diagnosis.get('scientific_name', ''),
+                            description=diagnosis.get('description', ''),
+                            symptoms=diagnosis.get('symptoms', []),
+                            treatment=diagnosis.get('treatment', {}),
+                            severity=diagnosis.get('severity', 'medium'),
+                            prevention=diagnosis.get('prevention', [])
+                        )
+                        
+                        print(f"✅ [RAG] Got rich AI diagnosis from Gemini/OpenAI!")
+                        return {
+                            'success': True,
+                            'disease': diagnosis,
+                            'source': 'online_llm',
+                            'language': language
+                        }
+                    except concurrent.futures.TimeoutError:
+                        print(f"⏱️  [RAG] Gemini/OpenAI timeout after 10s, falling back to knowledge base...")
                     
-                    # Cache for offline use (will be in requested language)
-                    db_service.cache_disease(
-                        name=disease_name,
-                        scientific_name=diagnosis.get('scientific_name', ''),
-                        description=diagnosis.get('description', ''),
-                        symptoms=diagnosis.get('symptoms', []),
-                        treatment=diagnosis.get('treatment', {}),
-                        severity=diagnosis.get('severity', 'medium'),
-                        prevention=diagnosis.get('prevention', [])
-                    )
-                    
-                    return {
-                        'success': True,
-                        'disease': diagnosis,
-                        'source': 'online_llm',
-                        'language': language
-                    }
-                    
-                except Exception as e:
-                    print(f"❌ Online RAG failed for {language}: {e}")
-                    # Fall through to English sources as fallback
-                    print(f"⚠️  Falling back to English sources...")
+            except Exception as e:
+                print(f"❌ [RAG] Online diagnosis failed: {e}, falling back to knowledge base...")
         
-        # For English OR as fallback: Try cache first (offline support)
+        # PRIORITY 2: Try cache (fast offline support)
         if use_cache:
             cached = db_service.get_disease(disease_name)
             if cached:
+                print(f"📦 [RAG] Using cached diagnosis")
                 return {
                     'success': True,
                     'disease': {
@@ -100,9 +103,11 @@ class RAGService:
                     'language': language
                 }
         
-        # Try local knowledge base (English only)
+        # PRIORITY 3: Try local knowledge base (offline fallback)
         if disease_name in self.knowledge_base:
             diagnosis = self.knowledge_base[disease_name]
+            
+            print(f"📚 [RAG] Using local knowledge base")
             
             # Cache for offline use
             db_service.cache_disease(
@@ -122,33 +127,8 @@ class RAGService:
                 'language': language
             }
         
-        # Try online RAG if enabled (check both Gemini and OpenAI keys)
-        if self.use_online and (config.GEMINI_API_KEY or config.OPENAI_API_KEY):
-            try:
-                diagnosis = self.get_online_diagnosis(disease_name, language)
-                
-                # Cache for offline use
-                db_service.cache_disease(
-                    name=disease_name,
-                    scientific_name=diagnosis.get('scientific_name', ''),
-                    description=diagnosis.get('description', ''),
-                    symptoms=diagnosis.get('symptoms', []),
-                    treatment=diagnosis.get('treatment', {}),
-                    severity=diagnosis.get('severity', 'medium'),
-                    prevention=diagnosis.get('prevention', [])
-                )
-                
-                return {
-                    'success': True,
-                    'disease': diagnosis,
-                    'source': 'online_llm',
-                    'language': language
-                }
-                
-            except Exception as e:
-                print(f"❌ Online RAG failed: {e}")
-        
-        # No information found
+        # PRIORITY 4: No information found anywhere
+        print(f"❌ [RAG] No information found for: {disease_name}")
         return {
             'success': False,
             'error': f'No information found for disease: {disease_name}',

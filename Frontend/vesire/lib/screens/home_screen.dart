@@ -8,6 +8,7 @@ import 'notifications_screen.dart';
 import 'garden_screen.dart';
 import 'guide_screen.dart';
 import 'community_screen.dart';
+import 'api_test_screen.dart';
 import '../services/connectivity_service.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/language_provider.dart';
@@ -36,15 +37,14 @@ class _HomeScreenState extends State<HomeScreen> {
     // Check connectivity when dashboard loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ConnectivityService().checkConnectivityWithFeedback(context);
-      // Start monitoring connectivity changes
-      ConnectivityService().startMonitoring(context);
+      // Start global monitoring (no context needed)
+      ConnectivityService().startMonitoring();
     });
   }
 
   @override
   void dispose() {
-    // Stop monitoring when leaving the screen
-    ConnectivityService().stopMonitoring();
+    // Don't stop monitoring here - let it run globally
     super.dispose();
   }
 
@@ -659,6 +659,37 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                   ),
                                 ),
                               ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // API Test Button
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ApiTestScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.api,
+                              color: Color(0xFF4CAF50),
+                              size: 20,
                             ),
                           ),
                         ),

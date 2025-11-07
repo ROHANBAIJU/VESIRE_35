@@ -5,11 +5,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/notification_service.dart';
+import 'services/connectivity_service.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/language_provider.dart';
 import 'providers/analytics_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/signup_screen.dart';
+
+// Global navigator key for showing snackbars from anywhere
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +33,9 @@ void main() async {
 
   // Initialize notification service
   await NotificationService().initialize();
+  
+  // Initialize connectivity service
+  await ConnectivityService().initialize();
 
   runApp(
     MultiProvider(
@@ -41,14 +48,37 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Start global connectivity monitoring when app starts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ConnectivityService().startMonitoring();
+      print('🌐 [APP] Global connectivity monitoring started');
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clean up connectivity monitoring when app closes
+    ConnectivityService().dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
         return MaterialApp(
+          navigatorKey: navigatorKey, // Add global navigator key
           title: 'Vesire',
           debugShowCheckedModeBanner: false,
           locale: languageProvider.locale,

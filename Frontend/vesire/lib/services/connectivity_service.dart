@@ -3,6 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:flutter/material.dart';
 import '../utils/snackbar_utils.dart';
+import '../main.dart' show navigatorKey;
 
 class ConnectivityService {
   static final ConnectivityService _instance = ConnectivityService._internal();
@@ -22,11 +23,14 @@ class ConnectivityService {
   
   bool _isOnline = true;
   bool get isOnline => _isOnline;
+  bool _hasShownInitialStatus = false;
+  bool _isMonitoring = false;
 
   /// Initialize connectivity monitoring
   Future<void> initialize() async {
     // Check initial connectivity status
     await checkConnectivity();
+    print('🌐 [CONNECTIVITY] Service initialized. Status: ${_isOnline ? "ONLINE" : "OFFLINE"}');
   }
 
   /// Check current connectivity status
@@ -130,59 +134,95 @@ class ConnectivityService {
     );
   }
 
-  /// Start listening to connectivity changes
-  void startMonitoring(BuildContext context) {
-    // Listen to device connectivity changes
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
-      (List<ConnectivityResult> results) async {
-        if (results.contains(ConnectivityResult.none)) {
-          _isOnline = false;
-          _connectivityController.add(false);
-          print('🌐 [CONNECTIVITY] Network lost');
-        } else {
-          // Verify internet access when network appears
-          await checkConnectivity();
-        }
-      },
-    );
+  /// Start listening to connectivity changes globally
+  void startMonitoring() {
+    if (_isMonitoring) {
+      print('🌐 [CONNECTIVITY] Already monitoring, skipping...');
+      return;
+    }
     
-    // Listen to internet connection status changes
+    print('🌐 [CONNECTIVITY] 🎯 Starting global connectivity monitoring...');
+    _isMonitoring = true;
+    
+    // Listen to internet connection status changes (more reliable)
     _internetStatusSubscription = _internetConnection.onStatusChange.listen(
       (status) {
         final wasOnline = _isOnline;
         _isOnline = status == InternetStatus.connected;
         _connectivityController.add(_isOnline);
         
-        print('🌐 [CONNECTIVITY] Status: ${_isOnline ? "ONLINE" : "OFFLINE"}');
+        print('🌐 [CONNECTIVITY] Status changed: ${_isOnline ? "ONLINE ✅" : "OFFLINE ❌"}');
 
-        // Only show notification if status changed
-        if (wasOnline != _isOnline) {
-          if (_isOnline) {
-            SnackBarUtils.showSuccessSnackBar(
-              context,
-              '🌐 Back Online!',
-            );
-          } else {
-            SnackBarUtils.showWarningSnackBar(
-              context,
-              '📴 Connection Lost - Offline Mode',
-            );
+        // Show snackbar on status change (skip initial status)
+        if (_hasShownInitialStatus && wasOnline != _isOnline) {
+          _showConnectivitySnackbar(_isOnline);
+        } else if (!_hasShownInitialStatus) {
+          _hasShownInitialStatus = true;
+          // Show initial status after a delay
+          Future.delayed(const Duration(seconds: 1), () {
+            _showConnectivitySnackbar(_isOnline);
+          });
+        }
+      },
+    );
+    
+    // Also listen to device connectivity changes as backup
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
+      (List<ConnectivityResult> results) async {
+        print('🌐 [CONNECTIVITY] Device connectivity changed: ${results.first.name}');
+        if (results.contains(ConnectivityResult.none)) {
+          final wasOnline = _isOnline;
+          _isOnline = false;
+          _connectivityController.add(false);
+          
+          if (_hasShownInitialStatus && wasOnline != _isOnline) {
+            _showConnectivitySnackbar(false);
           }
+        } else {
+          // Verify internet access when network appears
+          await checkConnectivity();
         }
       },
     );
   }
 
+  /// Show connectivity snackbar using global navigator key
+  void _showConnectivitySnackbar(bool isOnline) {
+    try {
+      final context = navigatorKey.currentContext;
+      if (context != null && context.mounted) {
+        if (isOnline) {
+          SnackBarUtils.showSuccessSnackBar(
+            context,
+            '🌐 Back Online! Internet connected',
+          );
+        } else {
+          SnackBarUtils.showWarningSnackBar(
+            context,
+            '📴 Connection Lost - Working Offline',
+          );
+        }
+      } else {
+        print('🌐 [CONNECTIVITY] ⚠️ No valid context available for snackbar');
+      }
+    } catch (e) {
+      print('🌐 [CONNECTIVITY] ⚠️ Could not show snackbar: $e');
+    }
+  }
+
   /// Stop listening to connectivity changes
   void stopMonitoring() {
+    print('🌐 [CONNECTIVITY] Stopping monitoring...');
     _connectivitySubscription?.cancel();
     _connectivitySubscription = null;
+    _internetStatusSubscription?.cancel();
+    _internetStatusSubscription = null;
+    _isMonitoring = false;
   }
 
   /// Clean up resources
   void dispose() {
-    _connectivitySubscription?.cancel();
-    _internetStatusSubscription?.cancel();
+    stopMonitoring();
     _connectivityController.close();
   }
 }

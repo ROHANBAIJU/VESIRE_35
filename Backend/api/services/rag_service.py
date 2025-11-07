@@ -57,7 +57,7 @@ class RAGService:
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     future = executor.submit(self.get_online_diagnosis, disease_name, language)
                     try:
-                        diagnosis = future.result(timeout=10.0)  # 10 second timeout
+                        diagnosis = future.result(timeout=60.0)  # 10 second timeout
                         
                         # Cache for offline use
                         db_service.cache_disease(

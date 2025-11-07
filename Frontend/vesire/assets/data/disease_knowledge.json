@@ -1,4 +1,4 @@
-﻿{
+{
   "Apple leaf": {
     "name": "Healthy Apple Leaf",
     "scientific_name": "Malus domestica",
@@ -28,7 +28,17 @@
     "severity": "none",
     "affected_plants": [
       "Apple"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "स्वस्थ सेब का पत्ता",
+        "description": "यह एक स्वस्थ सेब का पत्ता है जो रोग या कीट क्षति के कोई लक्षण नहीं दिखाता है।"
+      },
+      "kn": {
+        "name": "ಆರೋಗ್ಯಕರ ಸೇಬು ಎಲೆ",
+        "description": "ಇದು ರೋಗ ಅಥವಾ ಕೀಟ ಹಾನಿಯ ಯಾವುದೇ ಚಿಹ್ನೆಗಳನ್ನು ತೋರಿಸದ ಆರೋಗ್ಯಕರ ಸೇಬು ಎಲೆಯಾಗಿದೆ."
+      }
+    }
   },
   "Apple rust leaf": {
     "name": "Apple Rust Leaf",
@@ -62,7 +72,17 @@
     "affected_plants": [
       "Apple",
       "Cedar"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "सेब जंग पत्ता",
+        "description": "देवदार-सेब जंग सेब के पत्तों पर विशिष्ट नारंगी धब्बे पैदा करता है।"
+      },
+      "kn": {
+        "name": "ಸೇಬು ತುಕ್ಕು ಎಲೆ",
+        "description": "ದೇವದಾರು-ಸೇಬು ತುಕ್ಕು ಸೇಬು ಎಲೆಗಳ ಮೇಲೆ ವಿಶಿಷ್ಟವಾದ ಕಿತ್ತಳೆ ಚುಕ್ಕೆಗಳನ್ನು ಉಂಟುಮಾಡುತ್ತದೆ."
+      }
+    }
   },
   "Apple Scab Leaf": {
     "name": "Apple Scab Leaf",
@@ -96,7 +116,17 @@
     "affected_plants": [
       "Apple",
       "Pear"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "सेब पपड़ी पत्ता",
+        "description": "सेब पपड़ी सेब के पेड़ों की सबसे गंभीर बीमारियों में से एक है।"
+      },
+      "kn": {
+        "name": "ಸೇಬು ಹೊರೆಪದರ ಎಲೆ",
+        "description": "ಸೇಬು ಹೊರೆಪದರವು ಸೇಬು ಮರಗಳ ಅತ್ಯಂತ ಗಂಭೀರ ರೋಗಗಳಲ್ಲಿ ಒಂದಾಗಿದೆ."
+      }
+    }
   },
   "Bell_pepper leaf": {
     "name": "Healthy Bell Pepper Leaf",
@@ -127,7 +157,17 @@
     "severity": "none",
     "affected_plants": [
       "Bell Pepper"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "स्वस्थ शिमला मिर्च का पत्ता",
+        "description": "यह एक स्वस्थ शिमला मिर्च का पत्ता है जो कोई रोग लक्षण नहीं दिखाता है।"
+      },
+      "kn": {
+        "name": "ಆರೋಗ್ಯಕರ ಬೆಲ್ ಪೆಪ್ಪರ್ ಎಲೆ",
+        "description": "ಇದು ಯಾವುದೇ ರೋಗದ ಲಕ್ಷಣಗಳನ್ನು ತೋರಿಸದ ಆರೋಗ್ಯಕರ ಬೆಲ್ ಪೆಪ್ಪರ್ ಎಲೆಯಾಗಿದೆ."
+      }
+    }
   },
   "Bell_pepper leaf spot": {
     "name": "Bell Pepper Leaf Spot",
@@ -161,7 +201,17 @@
     "affected_plants": [
       "Bell pepper",
       "Tomato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Bell Pepper Leaf Spot",
+        "description": "Bacterial leaf spot causes leaf drop and reduced fruit quality."
+      },
+      "kn": {
+        "name": "Bell Pepper Leaf Spot",
+        "description": "Bacterial leaf spot causes leaf drop and reduced fruit quality."
+      }
+    }
   },
   "Blueberry leaf": {
     "name": "Healthy Blueberry Leaf",
@@ -192,7 +242,17 @@
     "severity": "none",
     "affected_plants": [
       "Blueberry"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Healthy Blueberry Leaf",
+        "description": "A healthy blueberry leaf with proper color."
+      },
+      "kn": {
+        "name": "Healthy Blueberry Leaf",
+        "description": "A healthy blueberry leaf with proper color."
+      }
+    }
   },
   "Cherry leaf": {
     "name": "Healthy Cherry Leaf",
@@ -223,7 +283,17 @@
     "severity": "none",
     "affected_plants": [
       "Cherry"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Healthy Cherry Leaf",
+        "description": "A healthy cherry leaf with normal coloration."
+      },
+      "kn": {
+        "name": "Healthy Cherry Leaf",
+        "description": "A healthy cherry leaf with normal coloration."
+      }
+    }
   },
   "Corn Gray leaf spot": {
     "name": "Corn Gray Leaf Spot",
@@ -255,7 +325,17 @@
     "severity": "medium",
     "affected_plants": [
       "Corn"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "मक्का भूरा पत्ता धब्बा",
+        "description": "ग्रे लीफ स्पॉट मक्का पत्तियों पर आयताकार घाव पैदा करता है।"
+      },
+      "kn": {
+        "name": "ಜೋಳ ಬೂದು ಎಲೆ ಚುಕ್ಕೆ",
+        "description": "ಬೂದು ಎಲೆ ಚುಕ್ಕೆ ಜೋಳ ಎಲೆಗಳ ಮೇಲೆ ಆಯತಾಕಾರದ ಗಾಯಗಳನ್ನು ಉಂಟುಮಾಡುತ್ತದೆ."
+      }
+    }
   },
   "Corn leaf blight": {
     "name": "Corn Leaf Blight",
@@ -287,7 +367,17 @@
     "severity": "medium",
     "affected_plants": [
       "Corn"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "मक्का पत्ती अंगमारी",
+        "description": "उत्तरी मक्का पत्ती अंगमारी उपज में काफी कमी लाती है।"
+      },
+      "kn": {
+        "name": "ಜೋಳ ಎಲೆ ರೋಗ",
+        "description": "ಉತ್ತರ ಜೋಳ ಎಲೆ ರೋಗವು ಇಳುವರಿಯಲ್ಲಿ ಗಣನೀಯ ಇಳಿಕೆಗೆ ಕಾರಣವಾಗುತ್ತದೆ."
+      }
+    }
   },
   "Corn rust leaf": {
     "name": "Corn Rust Leaf",
@@ -319,7 +409,17 @@
     "severity": "low",
     "affected_plants": [
       "Corn"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Corn Rust Leaf",
+        "description": "Common rust produces pustules on corn leaves."
+      },
+      "kn": {
+        "name": "Corn Rust Leaf",
+        "description": "Common rust produces pustules on corn leaves."
+      }
+    }
   },
   "grape leaf": {
     "name": "Healthy Grape Leaf",
@@ -350,7 +450,17 @@
     "severity": "none",
     "affected_plants": [
       "Grape"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "स्वस्थ अंगूर का पत्ता",
+        "description": "यह एक स्वस्थ अंगूर का पत्ता है जो कोई बीमारी के लक्षण नहीं दिखाता है।"
+      },
+      "kn": {
+        "name": "ಆರೋಗ್ಯಕರ ದ್ರಾಕ್ಷಿ ಎಲೆ",
+        "description": "ಇದು ಯಾವುದೇ ರೋಗದ ಲಕ್ಷಣಗಳನ್ನು ತೋರಿಸದ ಆರೋಗ್ಯಕರ ದ್ರಾಕ್ಷಿ ಎಲೆಯಾಗಿದೆ."
+      }
+    }
   },
   "grape leaf black rot": {
     "name": "Grape Leaf Black Rot",
@@ -386,7 +496,17 @@
     "severity": "high",
     "affected_plants": [
       "Grape"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "अंगूर पत्ती काला सड़न",
+        "description": "काला सड़न अंगूर की सबसे विनाशकारी बीमारियों में से एक है।"
+      },
+      "kn": {
+        "name": "ದ್ರಾಕ್ಷಿ ಎಲೆ ಕಪ್ಪು ಕೊಳೆತ",
+        "description": "ಕಪ್ಪು ಕೊಳೆತವು ದ್ರಾಕ್ಷಿಯ ಅತ್ಯಂತ ವಿನಾಶಕಾರಿ ರೋಗಗಳಲ್ಲಿ ಒಂದಾಗಿದೆ."
+      }
+    }
   },
   "Peach leaf": {
     "name": "Healthy Peach Leaf",
@@ -417,7 +537,17 @@
     "severity": "none",
     "affected_plants": [
       "Peach"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Healthy Peach Leaf",
+        "description": "A healthy peach leaf with normal coloration."
+      },
+      "kn": {
+        "name": "Healthy Peach Leaf",
+        "description": "A healthy peach leaf with normal coloration."
+      }
+    }
   },
   "Potato leaf": {
     "name": "Healthy Potato Leaf",
@@ -448,7 +578,17 @@
     "severity": "none",
     "affected_plants": [
       "Potato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "स्वस्थ आलू का पत्ता",
+        "description": "यह एक स्वस्थ आलू का पत्ता है जो कोई बीमारी के लक्षण नहीं दिखाता है।"
+      },
+      "kn": {
+        "name": "ಆರೋಗ್ಯಕರ ಆಲೂಗಡ್ಡೆ ಎಲೆ",
+        "description": "ಇದು ಯಾವುದೇ ರೋಗದ ಲಕ್ಷಣಗಳನ್ನು ತೋರಿಸದ ಆರೋಗ್ಯಕರ ಆಲೂಗಡ್ಡೆ ಎಲೆಯಾಗಿದೆ."
+      }
+    }
   },
   "Potato leaf early blight": {
     "name": "Potato Leaf Early Blight",
@@ -484,7 +624,17 @@
     "severity": "medium",
     "affected_plants": [
       "Potato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Potato Leaf Early Blight",
+        "description": "Early blight causes premature defoliation in potatoes."
+      },
+      "kn": {
+        "name": "Potato Leaf Early Blight",
+        "description": "Early blight causes premature defoliation in potatoes."
+      }
+    }
   },
   "Potato leaf late blight": {
     "name": "Potato Leaf Late Blight",
@@ -521,7 +671,17 @@
     "affected_plants": [
       "Potato",
       "Tomato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Potato Leaf Late Blight",
+        "description": "Late blight is the most devastating potato disease."
+      },
+      "kn": {
+        "name": "Potato Leaf Late Blight",
+        "description": "Late blight is the most devastating potato disease."
+      }
+    }
   },
   "Raspberry leaf": {
     "name": "Healthy Raspberry Leaf",
@@ -552,7 +712,17 @@
     "severity": "none",
     "affected_plants": [
       "Raspberry"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Healthy Raspberry Leaf",
+        "description": "A healthy raspberry leaf with proper color."
+      },
+      "kn": {
+        "name": "Healthy Raspberry Leaf",
+        "description": "A healthy raspberry leaf with proper color."
+      }
+    }
   },
   "Soyabean leaf": {
     "name": "Healthy Soybean Leaf",
@@ -583,7 +753,17 @@
     "severity": "none",
     "affected_plants": [
       "Soybean"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Healthy Soybean Leaf",
+        "description": "A healthy soybean leaf with proper trifoliate structure."
+      },
+      "kn": {
+        "name": "Healthy Soybean Leaf",
+        "description": "A healthy soybean leaf with proper trifoliate structure."
+      }
+    }
   },
   "Squash Powdery mildew leaf": {
     "name": "Squash Powdery Mildew",
@@ -621,7 +801,17 @@
       "Squash",
       "Cucumber",
       "Pumpkin"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Squash Powdery Mildew",
+        "description": "Powdery mildew appears as white powdery spots on leaves."
+      },
+      "kn": {
+        "name": "Squash Powdery Mildew",
+        "description": "Powdery mildew appears as white powdery spots on leaves."
+      }
+    }
   },
   "Strawberry leaf": {
     "name": "Healthy Strawberry Leaf",
@@ -652,7 +842,17 @@
     "severity": "none",
     "affected_plants": [
       "Strawberry"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Healthy Strawberry Leaf",
+        "description": "A healthy strawberry leaf with proper trifoliate structure."
+      },
+      "kn": {
+        "name": "Healthy Strawberry Leaf",
+        "description": "A healthy strawberry leaf with proper trifoliate structure."
+      }
+    }
   },
   "Tomato Early blight leaf": {
     "name": "Tomato Early Blight",
@@ -689,7 +889,17 @@
     "severity": "medium",
     "affected_plants": [
       "Tomato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "टमाटर प्रारंभिक अंगमारी पत्ता",
+        "description": "प्रारंभिक अंगमारी टमाटर की एक सामान्य कवक रोग है।"
+      },
+      "kn": {
+        "name": "ಟೊಮೇಟೊ ಆರಂಭಿಕ ರೋಗ ಎಲೆ",
+        "description": "ಆರಂಭಿಕ ರೋಗವು ಟೊಮೇಟೊದ ಸಾಮಾನ್ಯ ಶಿಲೀಂಧ್ರ ರೋಗವಾಗಿದೆ."
+      }
+    }
   },
   "Tomato leaf": {
     "name": "Healthy Tomato Leaf",
@@ -720,7 +930,17 @@
     "severity": "none",
     "affected_plants": [
       "Tomato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "स्वस्थ टमाटर का पत्ता",
+        "description": "यह एक स्वस्थ टमाटर का पत्ता है जो कोई रोग लक्षण नहीं दिखाता है।"
+      },
+      "kn": {
+        "name": "ಆರೋಗ್ಯಕರ ಟೊಮೇಟೊ ಎಲೆ",
+        "description": "ಇದು ಯಾವುದೇ ರೋಗದ ಲಕ್ಷಣಗಳನ್ನು ತೋರಿಸದ ಆರೋಗ್ಯಕರ ಟೊಮೇಟೊ ಎಲೆಯಾಗಿದೆ."
+      }
+    }
   },
   "Tomato leaf bacterial spot": {
     "name": "Tomato Bacterial Spot",
@@ -758,7 +978,17 @@
     "affected_plants": [
       "Tomato",
       "Pepper"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "टमाटर पत्ती बैक्टीरियल धब्बा",
+        "description": "बैक्टीरियल धब्बा पत्तियों, तनों और फलों को प्रभावित करता है।"
+      },
+      "kn": {
+        "name": "ಟೊಮೇಟೊ ಎಲೆ ಬ್ಯಾಕ್ಟೀರಿಯಾ ಚುಕ್ಕೆ",
+        "description": "ಬ್ಯಾಕ್ಟೀರಿಯಾ ಚುಕ್ಕೆ ಎಲೆಗಳು, ಕಾಂಡಗಳು ಮತ್ತು ಹಣ್ಣುಗಳ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ."
+      }
+    }
   },
   "Tomato leaf late blight": {
     "name": "Tomato Late Blight",
@@ -797,7 +1027,17 @@
     "affected_plants": [
       "Tomato",
       "Potato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Tomato Late Blight",
+        "description": "Late blight can rapidly destroy entire tomato crops."
+      },
+      "kn": {
+        "name": "Tomato Late Blight",
+        "description": "Late blight can rapidly destroy entire tomato crops."
+      }
+    }
   },
   "Tomato leaf mosaic virus": {
     "name": "Tomato Mosaic Virus",
@@ -836,7 +1076,17 @@
     "affected_plants": [
       "Tomato",
       "Pepper"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "टमाटर पत्ती मोज़ेक वायरस",
+        "description": "मोज़ेक वायरस पत्तियों पर मोज़ेक पैटर्न का कारण बनता है।"
+      },
+      "kn": {
+        "name": "ಟೊಮೇಟೊ ಎಲೆ ಮೊಸಾಯಿಕ್ ವೈರಸ್",
+        "description": "ಮೊಸಾಯಿಕ್ ವೈರಸ್ ಎಲೆಗಳ ಮೇಲೆ ಮೊಸಾಯಿಕ್ ಮಾದರಿಯನ್ನು ಉಂಟುಮಾಡುತ್ತದೆ."
+      }
+    }
   },
   "Tomato leaf yellow virus": {
     "name": "Tomato Yellow Leaf Curl Virus",
@@ -875,7 +1125,17 @@
       "Tomato",
       "Bean",
       "Pepper"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Tomato Yellow Leaf Curl Virus",
+        "description": "TYLCV transmitted by whiteflies causes severe yellowing."
+      },
+      "kn": {
+        "name": "Tomato Yellow Leaf Curl Virus",
+        "description": "TYLCV transmitted by whiteflies causes severe yellowing."
+      }
+    }
   },
   "Tomato mold leaf": {
     "name": "Tomato Leaf Mold",
@@ -911,7 +1171,17 @@
     "severity": "medium",
     "affected_plants": [
       "Tomato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Tomato Leaf Mold",
+        "description": "Leaf mold primarily affects greenhouse tomatoes."
+      },
+      "kn": {
+        "name": "Tomato Leaf Mold",
+        "description": "Leaf mold primarily affects greenhouse tomatoes."
+      }
+    }
   },
   "Tomato Septoria leaf spot": {
     "name": "Tomato Septoria Leaf Spot",
@@ -947,7 +1217,17 @@
     "severity": "medium",
     "affected_plants": [
       "Tomato"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "टमाटर सेप्टोरिया पत्ती धब्बा",
+        "description": "सेप्टोरिया लीफ स्पॉट टमाटर की एक आम बीमारी है।"
+      },
+      "kn": {
+        "name": "ಟೊಮೇಟೊ ಸೆಪ್ಟೋರಿಯಾ ಎಲೆ ಚುಕ್ಕೆ",
+        "description": "ಸೆಪ್ಟೋರಿಯಾ ಎಲೆ ಚುಕ್ಕೆ ಟೊಮೇಟೊದ ಸಾಮಾನ್ಯ ರೋಗವಾಗಿದೆ."
+      }
+    }
   },
   "Tomato two spotted spider mites leaf": {
     "name": "Two Spotted Spider Mites",
@@ -987,7 +1267,17 @@
       "Tomato",
       "Bean",
       "Cucumber"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "टमाटर दो धब्बेदार मकड़ी के कीड़े पत्ता",
+        "description": "मकड़ी के कीड़े पत्तियों से रस चूसते हैं, जिससे पीलापन और क्षति होती है।"
+      },
+      "kn": {
+        "name": "ಟೊಮೇಟೊ ಎರಡು ಚುಕ್ಕೆಯ ಜೇಡ ಹುಳುಗಳು ಎಲೆ",
+        "description": "ಜೇಡ ಹುಳುಗಳು ಎಲೆಗಳಿಂದ ರಸವನ್ನು ಹೀರುತ್ತವೆ, ಇದು ಹಳಸುವಿಕೆ ಮತ್ತು ಹಾನಿಗೆ ಕಾರಣವಾಗುತ್ತದೆ."
+      }
+    }
   },
   "Bacterial_Blight": {
     "name": "Bacterial Blight",
@@ -1023,7 +1313,17 @@
     "affected_plants": [
       "Rice",
       "Wheat"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Bacterial Blight",
+        "description": "Bacterial blight is a serious disease affecting rice."
+      },
+      "kn": {
+        "name": "Bacterial Blight",
+        "description": "Bacterial blight is a serious disease affecting rice."
+      }
+    }
   },
   "Brown_Spot": {
     "name": "Brown Spot",
@@ -1058,7 +1358,17 @@
     "severity": "medium",
     "affected_plants": [
       "Rice"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Brown Spot",
+        "description": "Brown spot affects rice causing brown lesions."
+      },
+      "kn": {
+        "name": "Brown Spot",
+        "description": "Brown spot affects rice causing brown lesions."
+      }
+    }
   },
   "Rice_Blast": {
     "name": "Rice Blast",
@@ -1096,7 +1406,17 @@
     "affected_plants": [
       "Rice",
       "Wheat"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Rice Blast",
+        "description": "Rice blast is the most serious disease of rice worldwide."
+      },
+      "kn": {
+        "name": "Rice Blast",
+        "description": "Rice blast is the most serious disease of rice worldwide."
+      }
+    }
   },
   "Septoria": {
     "name": "Septoria Leaf Blotch",
@@ -1133,7 +1453,17 @@
     "affected_plants": [
       "Wheat",
       "Barley"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Septoria Leaf Blotch",
+        "description": "Septoria leaf blotch is a major wheat disease."
+      },
+      "kn": {
+        "name": "Septoria Leaf Blotch",
+        "description": "Septoria leaf blotch is a major wheat disease."
+      }
+    }
   },
   "Stripe Rust": {
     "name": "Stripe Rust",
@@ -1172,6 +1502,16 @@
       "Wheat",
       "Barley",
       "Rye"
-    ]
+    ],
+    "translations": {
+      "hi": {
+        "name": "Stripe Rust",
+        "description": "Stripe rust produces yellow-orange stripes on wheat leaves."
+      },
+      "kn": {
+        "name": "Stripe Rust",
+        "description": "Stripe rust produces yellow-orange stripes on wheat leaves."
+      }
+    }
   }
 }

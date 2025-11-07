@@ -27,7 +27,8 @@ class RAGService:
         """Load local disease knowledge base"""
         try:
             if config.KNOWLEDGE_BASE_PATH.exists():
-                with open(config.KNOWLEDGE_BASE_PATH, 'r', encoding='utf-8') as f:
+                # Use utf-8-sig to handle UTF-8 BOM if present
+                with open(config.KNOWLEDGE_BASE_PATH, 'r', encoding='utf-8-sig') as f:
                     return json.load(f)
             else:
                 print(f"⚠️  Knowledge base not found at {config.KNOWLEDGE_BASE_PATH}")

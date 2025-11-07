@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import '../services/notification_service.dart';
 import '../services/api_service.dart';
 import '../services/hybrid_detection_service.dart';
+import '../services/environmental_service.dart';
 import '../utils/snackbar_utils.dart';
 import '../models/detection_response.dart';
 import '../models/diagnosis_response.dart';
@@ -149,6 +150,9 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
     
     setState(() => _isDetectionActive = true);
     
+    // Reset tracking to clear cached detections from previous scan
+    _hybridService.resetTracking();
+    
     // Initialize on-device detection
     _hybridService.initializeOnDevice();
     
@@ -256,6 +260,18 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
       if (diagnosis != null) {
         print('✅ [FLUTTER] RAG diagnosis received! Source: ${diagnosisResult['source']}');
         
+        // Generate random environmental metrics for this scan
+        final envService = EnvironmentalService();
+        final envDataRaw = envService.generateEnvironmentalData();
+        
+        // Convert to Map<String, int> for analytics (AnalyticsData expects int values)
+        final envData = {
+          'lightExposure': (envDataRaw['light_intensity'] as int),
+          'humidity': (envDataRaw['humidity'] as double).round(),
+          'temperature': (envDataRaw['temperature'] as double).round(),
+          'soilMoisture': (envDataRaw['soil_moisture'] as double).round(),
+        };
+        
         // Update analytics provider with the data
         final analyticsProvider = Provider.of<AnalyticsProvider>(context, listen: false);
         analyticsProvider.updateFromDetection(
@@ -266,6 +282,8 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
           careRecommendations: diagnosis.disease.careRecommendations.isNotEmpty 
               ? diagnosis.disease.careRecommendations 
               : diagnosis.disease.prevention,
+          source: diagnosisResult['source'] as String, // Pass the source (rag/synthetic)
+          environmentalData: envData, // Add dynamic environmental metrics
         );
 
         // Speak the FULL AI summary using TTS (non-blocking) if enabled

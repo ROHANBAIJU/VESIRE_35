@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../widgets/markdown_text.dart';
+import '../services/tts_service.dart';
 import 'package:intl/intl.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -14,6 +15,9 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
+  final TtsService _ttsService = TtsService();
+  bool _isTtsMuted = false;
+
   @override
   void initState() {
     super.initState();
@@ -21,6 +25,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<AnalyticsProvider>(context, listen: false).loadAnalytics();
     });
+    // Get initial mute state
+    _isTtsMuted = _ttsService.isMuted;
   }
 
   @override
@@ -388,6 +394,36 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1A1A1A),
                   ),
+                ),
+                const Spacer(),
+                // Mute/Unmute button
+                IconButton(
+                  icon: Icon(
+                    _isTtsMuted ? Icons.volume_off : Icons.volume_up,
+                    color: _isTtsMuted ? Colors.grey : Colors.blue.shade700,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isTtsMuted = !_isTtsMuted;
+                      _ttsService.setMuted(_isTtsMuted);
+                    });
+                  },
+                  tooltip: _isTtsMuted ? 'Unmute voice' : 'Mute voice',
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // UI Tags for Online/Offline + RAG/Synthetic
+            Wrap(
+              spacing: 8,
+              children: [
+                _buildStatusChip(
+                  data.source == 'rag' ? '🌐 Online' : '📴 Offline',
+                  data.source == 'rag' ? Colors.green : Colors.orange,
+                ),
+                _buildStatusChip(
+                  data.source == 'rag' ? '🤖 RAG' : '🧪 Synthetic',
+                  data.source == 'rag' ? Colors.blue : Colors.purple,
                 ),
               ],
             ),
@@ -775,7 +811,46 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            // Talk button to speak recommendations
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final recommendationsText = data.careRecommendations.join('. ');
+                  await _ttsService.speak(recommendationsText);
+                },
+                icon: const Icon(Icons.volume_up),
+                label: const Text('Speak Recommendations'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -36,9 +36,13 @@ class YOLOModelService:
         """Load YOLO model"""
         try:
             from ultralytics import YOLO
+            import torch
             
             if not config.MODEL_PATH.exists():
                 raise FileNotFoundError(f"Model not found at {config.MODEL_PATH}")
+            
+            # Fix for PyTorch 2.6 - allow loading ultralytics models
+            torch.serialization.add_safe_globals(['ultralytics.nn.tasks.DetectionModel'])
             
             self.model = YOLO(str(config.MODEL_PATH))
             print(f"✅ Model loaded from {config.MODEL_PATH}")

@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../widgets/markdown_text.dart';
 import '../services/tts_service.dart';
+import '../services/connectivity_service.dart';
 import 'package:intl/intl.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -16,7 +17,9 @@ class AnalyticsScreen extends StatefulWidget {
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   final TtsService _ttsService = TtsService();
+  final ConnectivityService _connectivityService = ConnectivityService();
   bool _isTtsMuted = false;
+  bool _isOnline = false;
 
   @override
   void initState() {
@@ -27,6 +30,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     });
     // Get initial mute state
     _isTtsMuted = _ttsService.isMuted;
+    // Check connectivity
+    _checkConnectivity();
+  }
+
+  Future<void> _checkConnectivity() async {
+    final hasInternet = await _connectivityService.isConnected();
+    if (mounted) {
+      setState(() {
+        _isOnline = hasInternet;
+      });
+    }
   }
 
   @override
@@ -42,7 +56,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             : analyticsProvider.currentAnalytics == null
                 ? _buildEmptyState()
                 : RefreshIndicator(
-                    onRefresh: () => analyticsProvider.refresh(),
+                    onRefresh: () async {
+                      await _checkConnectivity();
+                      await analyticsProvider.refresh();
+                    },
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: Padding(
@@ -413,17 +430,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            // UI Tags for Online/Offline + RAG/Synthetic
+            // UI Tags for Online/Offline + RAG/Synthetic (based on connectivity, not API source)
             Wrap(
               spacing: 8,
               children: [
                 _buildStatusChip(
-                  data.source == 'rag' ? '🌐 Online' : '📴 Offline',
-                  data.source == 'rag' ? Colors.green : Colors.orange,
+                  _isOnline ? '🌐 Online' : '📴 Offline',
+                  _isOnline ? Colors.green : Colors.orange,
                 ),
                 _buildStatusChip(
-                  data.source == 'rag' ? '🤖 RAG' : '🧪 Synthetic',
-                  data.source == 'rag' ? Colors.blue : Colors.purple,
+                  _isOnline ? '🤖 RAG' : '🧪 Synthetic',
+                  _isOnline ? Colors.blue : Colors.purple,
                 ),
               ],
             ),

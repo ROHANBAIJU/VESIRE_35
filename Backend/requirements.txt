@@ -1,4 +1,6 @@
 # AgriScan Backend Requirements
+# Optimized for Render Cloud Deployment (Python 3.11+)
+
 # Core Flask
 Flask==3.0.0
 flask-cors==4.0.0
@@ -10,10 +12,10 @@ SQLAlchemy==2.0.23
 # Environment
 python-dotenv==1.0.0
 
-# AI/ML
+# AI/ML - Using wheel-compatible versions for faster builds
 ultralytics==8.1.0
 opencv-python-headless==4.8.1.78
-numpy==1.24.3
+numpy==1.26.2
 Pillow==10.1.0
 onnxruntime==1.16.3
 

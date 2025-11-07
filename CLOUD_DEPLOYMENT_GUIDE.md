@@ -44,10 +44,13 @@ git push origin main
    Branch: main
    Root Directory: Backend
    Runtime: Python 3
-   Build Command: pip install -r requirements.txt
+   Python Version: 3.11.6 (IMPORTANT: Click dropdown and select 3.11.6, NOT 3.13)
+   Build Command: python -m pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
    Start Command: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 api.app:app
    Instance Type: Free
    ```
+   
+   ⚠️ **CRITICAL**: Make sure to select **Python 3.11.6** from the version dropdown! Python 3.13 has compatibility issues with numpy.
 
 5. **Add Environment Variables**:
    Click "Advanced" → "Add Environment Variable":

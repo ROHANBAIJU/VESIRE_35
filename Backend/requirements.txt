@@ -16,7 +16,7 @@ python-dotenv==1.0.0
 ultralytics==8.1.0
 opencv-python-headless==4.8.1.78
 numpy==1.26.2
-Pillow==10.1.0
+Pillow==10.3.0
 onnxruntime==1.16.3
 
 # LLM APIs

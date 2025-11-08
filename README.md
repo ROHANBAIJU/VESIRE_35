@@ -215,11 +215,12 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 
 <div align="center">
 
-### Real-Time Disease Detection & AR Visualization
+### Dshboard, Garden, Plant Guide, Community.
 <img src="UI PICS FOR README/IMG-20251106-WA0015.jpg" width="250" alt="Detection Screen 1"/> <img src="UI PICS FOR README/IMG-20251106-WA0016.jpg" width="250" alt="Detection Screen 2"/> <img src="UI PICS FOR README/IMG-20251106-WA0017.jpg" width="250" alt="Detection Screen 3"/>
 
-### Treatment Recommendations & Results
-<img src="UI PICS FOR README/IMG-20251107-WA0004.jpg" width="250" alt="AR Overlay"/> 
+### Real-Time Disease Detection, AR Visualization with Treatment Recommendations & Results
+<img src="UI PICS FOR README/IMG-20251106-WA0015.jpg" width="250" alt="Detection Screen 1"/> <img src="UI PICS FOR README/IMG-20251106-WA0016.jpg" width="250" alt="Detection Screen 2"/> <img src="UI PICS FOR README/IMG-20251106-WA0017.jpg" width="250" alt="Detection Screen 3"/> <img src="UI PICS FOR README/IMG-20251107-WA0004.jpg" width="250" alt="AR Overlay"/> 
+
 
 *Real-time plant disease detection with AR bounding boxes and instant diagnosis*
 

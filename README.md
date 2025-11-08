@@ -215,12 +215,11 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 
 <div align="center">
 
-### Dshboard, Garden, Plant Guide, Community.
-<img src="UI PICS FOR README/IMG-20251106-WA0015.jpg" width="250" alt="Detection Screen 1"/> <img src="UI PICS FOR README/IMG-20251106-WA0016.jpg" width="250" alt="Detection Screen 2"/> <img src="UI PICS FOR README/IMG-20251106-WA0017.jpg" width="250" alt="Detection Screen 3"/>
+### Dashboard, Garden, Plant Guide, Community.
+<img src="UI PICS FOR README/IMG-20251107-WA0006.jpg" width="250" alt="Dashbord"/> <img src="UI PICS FOR README/IMG-20251107-WA0008.jpg" width="250" alt="Garden"/> <img src="UI PICS FOR README/IMG-20251107-WA0009.jpg" width="250" alt="Plant Guide"/> <img src="UI PICS FOR README/IMG-20251107-WA0010.jpg" width="250" alt="Community"/> 
 
 ### Real-Time Disease Detection, AR Visualization with Treatment Recommendations & Results
-<img src="UI PICS FOR README/IMG-20251106-WA0015.jpg" width="250" alt="Detection Screen 1"/> <img src="UI PICS FOR README/IMG-20251106-WA0016.jpg" width="250" alt="Detection Screen 2"/> <img src="UI PICS FOR README/IMG-20251106-WA0017.jpg" width="250" alt="Detection Screen 3"/> <img src="UI PICS FOR README/IMG-20251107-WA0004.jpg" width="250" alt="AR Overlay"/> 
-
+<img src="UI PICS FOR README/IMG-20251107-WA0005.jpg" width="250" alt="AR overlay"/> <img src="UI PICS FOR README/IMG-20251107-WA0004.jpg" width="250" alt="Analytics"/> 
 
 *Real-time plant disease detection with AR bounding boxes and instant diagnosis*
 

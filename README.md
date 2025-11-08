@@ -219,7 +219,7 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 <img src="UI PICS FOR README/IMG-20251106-WA0015.jpg" width="250" alt="Detection Screen 1"/> <img src="UI PICS FOR README/IMG-20251106-WA0016.jpg" width="250" alt="Detection Screen 2"/> <img src="UI PICS FOR README/IMG-20251106-WA0017.jpg" width="250" alt="Detection Screen 3"/>
 
 ### Treatment Recommendations & Results
-<img src="UI PICS FOR README/IMG-20251106-WA0018.jpg" width="250" alt="AR Overlay"/> <img src="UI PICS FOR README/IMG-20251106-WA0014.jpg" width="250" alt="Treatment Screen"/>
+<img src="UI PICS FOR README/IMG-20251107-WA0004.jpg" width="250" alt="AR Overlay"/> <img src="UI PICS FOR README/IMG-20251106-WA0014.jpg" width="250" alt="Treatment Screen"/>
 
 *Real-time plant disease detection with AR bounding boxes and instant diagnosis*
 

@@ -211,7 +211,7 @@ It visually highlights disease symptoms with overlays and provides immediate, ac
 
 ---
 
-## 📸 Screenshots
+## 📸 Working
 
 <div align="center">
 

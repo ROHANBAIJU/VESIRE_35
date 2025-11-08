@@ -291,7 +291,6 @@ python webcam_detection.py
 | [Architecture Guide](Backend/API_ARCHITECTURE.md) | System design and component details              |
 | [Integration Guide](Backend/INTEGRATION_READY.md) | Flutter integration instructions               |
 | [Quick Start Guide](Backend/QUICK_START.md)     | Getting started with the backend                 |
-| [Git Setup](GIT_SETUP_GUIDE.md)                 | Repository configuration guide                   |
 | [Environment Setup](Backend/ENV_SETUP_COMPLETE.md)| Environment variables configuration            |
 
 ---
@@ -299,17 +298,67 @@ python webcam_detection.py
 ## 🎯 Supported Diseases
 
 <details>
-<summary><b>📋 Click to see all 29 supported plant diseases</b></summary>
+<summary><b>📋 Click to see all 34 supported plant diseases</b></summary>
 
-- **Apple**: Apple Scab, Black Rot, Cedar Apple Rust, Healthy
-- **Corn**: Gray Leaf Spot, Common Rust, Northern Leaf Blight, Healthy
-- **Grape**: Black Rot, Esca (Black Measles), Leaf Blight, Healthy
-- **Potato**: Early Blight, Late Blight, Healthy
-- **Strawberry**: Leaf Scorch, Healthy
-- **Tomato**: Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Leaf Spot, Spider Mites, Target Spot, Mosaic Virus, Yellow Leaf Curl Virus, Healthy
-- **Pepper**: Bell Bacterial Spot, Healthy
-- **Cherry**: Powdery Mildew, Healthy
+🍎 Apple (3):
 
+Apple leaf
+Apple rust leaf
+Apple Scab Leaf
+🌶 Bell Pepper (2):
+4. Bell_pepper leaf
+5. Bell_pepper leaf spot
+
+🫐 Berries (4):
+6. Blueberry leaf
+7. Cherry leaf
+8. Raspberry leaf
+9. Strawberry leaf
+
+🌽 Corn (3):
+10. Corn Gray leaf spot
+11. Corn leaf blight
+12. Corn rust leaf
+
+🍇 Grape (2):
+13. grape leaf
+14. grape leaf black rot
+
+🍑 Peach (1):
+15. Peach leaf
+
+🥔 Potato (3):
+16. Potato leaf
+17. Potato leaf early blight
+18. Potato leaf late blight
+
+🫘 Soybean (1):
+19. Soyabean leaf
+
+🎃 Squash (1):
+20. Squash Powdery mildew leaf
+
+🍅 Tomato (9):
+21. Tomato Early blight leaf
+22. Tomato leaf
+23. Tomato leaf bacterial spot
+24. Tomato leaf late blight
+25. Tomato leaf mosaic virus
+26. Tomato leaf yellow virus
+27. Tomato mold leaf
+28. Tomato Septoria leaf spot
+29. Tomato two spotted spider mites leaf
+
+🌾 Rice (3):
+30. Bacterial_Blight
+31. Brown_Spot
+32. Rice_Blast
+
+🌾 Wheat (2):
+33. Septoria
+34. Stripe Rust
+
+Total: 34 disease classes covering major crops (Apple, Tomato, Potato, Corn, Rice, Wheat, Grape, and other vegetables/fruits)
 </details>
 
 ---
@@ -318,13 +367,13 @@ python webcam_detection.py
 
 | Metric       | Value     | Description                                         |
 | :----------- | :-------- | :-------------------------------------------------- |
-| **mAP@50**   | `85.3%`   | Mean Average Precision at IoU 0.5                   |
+| **mAP@50**   | `66.6%`   | Mean Average Precision at IoU 0.5                   |
 | **mAP@50-95**| `67.8%`   | Mean Average Precision at IoU 0.5-0.95              |
-| **Precision**| `82.1%`   | Accuracy of positive predictions                  |
-| **Recall**   | `78.4%`   | Ability to find all relevant instances            |
+| **Precision**| `61%`   | Accuracy of positive predictions                  |
+| **Recall**   | `64.1%`   | Ability to find all relevant instances            |
 | **Model Size** | `5.95 MB` | Optimized for mobile deployment (TFLite)          |
 | **Inference**| `~200ms`  | On mid-range Android devices                      |
-| **Dataset**  | `2,500+`  | Images from the PlantDoc dataset across 29 classes|
+| **Dataset**  | `3,000+(for training)`  | Images from the PlantDoc dataset across 34 classes|
 
 ---
 
@@ -335,13 +384,13 @@ python webcam_detection.py
   - [x] Flutter camera integration with AR overlay
   - [x] Offline SQLite database & Gemini RAG
   - [x] Real-time webcam detection with async diagnosis
-- [ ] **Phase 2: Enhancement (In Progress)**
-  - [ ] TFLite model export and on-device inference
-  - [ ] Multi-language support (Kannada, Hindi)
-  - [ ] Detection history and treatment UI
-- [ ] **Phase 3: Advanced Features (Planned)**
+- [x] **Phase 2: Enhancement (In Progress)**
+  - [x] TFLite model export and on-device inference
+  - [x] Multi-language support (Kannada, Hindi)
+  - [x] Detection history and treatment UI
+- [x] **Phase 3: Advanced Features (Planned)**
   - [ ] Voice input/output and weather alerts
-  - [ ] Community features and expert consultation
+  - [x] Community features and expert consultation
 
 ---
 

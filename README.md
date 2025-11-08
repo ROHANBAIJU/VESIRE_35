@@ -3,7 +3,7 @@
 # 🌿 AgriScan: AI-Powered Plant Disease Detection
 
 **An offline-first, AI-powered Augmented Reality diagnostic tool designed to empower smallholder farmers by providing instant, on-device crop disease analysis.**
-
+(SEE FIRST RELEASE AND DOWNLOAD APK FROM THERE)
 </div>
 
 <div align="center">
